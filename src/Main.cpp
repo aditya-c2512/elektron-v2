@@ -1,76 +1,47 @@
-#include <Windows.h>
-#include <iostream>
+#include "../include/Window.h"
+#include "../include/ElekException.h"
 
-LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+//#define _CRT_SECURE_NO_WARNINGS
+
+const wchar_t* GetWC(const char* c)
 {
-	switch (msg)
-	{
-	case WM_CLOSE:
-	{
-		PostQuitMessage(0);
-		break;
-	}
-	case WM_KEYDOWN:
-	{
-		if (wParam == 'F')
-		{
-			SetWindowText(hWnd, L"F Pressed");
-			break;
-		}
-	}
-	case WM_LBUTTONDOWN:
-	{
-		POINTS pt = MAKEPOINTS(lParam);
-		break;
-	}
-	}
-	return DefWindowProc(hWnd, msg, wParam, lParam);
+	const size_t cSize = strlen(c) + 1;
+	wchar_t* wc = new wchar_t[cSize];
+	size_t outSize;
+	mbstowcs_s(&outSize, wc, cSize, c, cSize-1);
+
+	return wc;
 }
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	// Defining Engine Name pClassName
-	LPCWSTR pClassName = L"Elektron Engine V2.0";
-
-	// Declaring Window Class
-	WNDCLASSEX wc = { 0 };
-	wc.cbSize = sizeof(wc);
-	wc.style = CS_OWNDC;
-	wc.lpfnWndProc = WndProc;
-	wc.cbClsExtra = 0;
-	wc.cbWndExtra = 0;
-	wc.hInstance = hInstance;
-	wc.hIcon = nullptr;
-	wc.hCursor = nullptr;
-	wc.hbrBackground = nullptr;
-	wc.lpszMenuName = nullptr;
-	wc.lpszClassName = pClassName;
-	wc.hIconSm = nullptr;
-
-	// Register Window Class
-	RegisterClassEx(&wc);
-
-	// Creating Instance of Window
-	HWND hWnd = CreateWindowEx(0, 
-		pClassName,
-		pClassName, 
-		WS_CAPTION|WS_MINIMIZEBOX|WS_SYSMENU,
-		0, 0, 600, 600,
-		nullptr, nullptr,
-		hInstance,
-		nullptr);
-
-	// Show Window using Window Handle hWnd
-	ShowWindow(hWnd, SW_SHOW);
-
-	MSG msg;
-	BOOL gResult;
-	while ((gResult=GetMessage(&msg,nullptr,0,0)) > 0)
+	try
 	{
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
+		Window wnd(800, 800, L"Elektron Engine V2.0");
+		//Window wnd2(300, 300, L"Sidebar");
 
-	if (gResult == -1) return -1;
-	else return msg.wParam;
+		MSG msg;
+		BOOL gResult;
+		while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
+		{
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+
+		if (gResult == -1) return -1;
+		else return msg.wParam;
+	}
+	catch (const ElekException& e)
+	{
+		MessageBox(nullptr, GetWC(e.what()), GetWC(e.GetType()), MB_OK | MB_ICONEXCLAMATION);
+	}
+	catch (const std::exception& e)
+	{
+		MessageBox(nullptr, GetWC(e.what()), L"STANDARD EXCEPTION", MB_OK | MB_ICONEXCLAMATION);
+	}
+	catch (...)
+	{
+		MessageBox(nullptr, L"No Details Available", L"Unknown Exception", MB_OK | MB_ICONEXCLAMATION);
+	}
+	return -1;
 }

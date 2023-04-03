@@ -1,4 +1,6 @@
 #include "../include/Window.h"
+#include "../resource.h"
+#include <sstream>
 
 Window::WindowClass Window::WindowClass::wndClass;
 
@@ -11,12 +13,12 @@ Window::WindowClass::WindowClass() noexcept : hInstance(GetModuleHandle(nullptr)
 	wc.cbClsExtra = 0;
 	wc.cbWndExtra = 0;
 	wc.hInstance = GetInstance();
-	wc.hIcon = nullptr;
+	wc.hIcon = static_cast<HICON>(LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 256, 256, 0));
 	wc.hCursor = nullptr;
 	wc.hbrBackground = nullptr;
 	wc.lpszMenuName = nullptr;
 	wc.lpszClassName = GetName();
-	wc.hIconSm = nullptr;
+	wc.hIconSm = static_cast<HICON>(LoadImage(hInstance, MAKEINTRESOURCE(IDI_ICON1), IMAGE_ICON, 256, 256, 0));
 
 	// Register Window Class
 	RegisterClassEx(&wc);
@@ -37,7 +39,7 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept
 	return wndClass.hInstance;
 }
 
-Window::Window(int width, int height, const char* name) noexcept
+Window::Window(int width, int height, LPCWSTR name) : width(width), height(height)
 {
 	RECT rc;
 	rc.left = 100;
@@ -45,15 +47,24 @@ Window::Window(int width, int height, const char* name) noexcept
 	rc.top = 100;
 	rc.bottom = rc.top + height;
 
-	AdjustWindowRect(&rc, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE);
+	if (FAILED(AdjustWindowRect(&rc, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)))
+	{
+		throw ELWND_LAST_EXCEPT();
+	}
+
 	hWnd = CreateWindow(
 		WindowClass::GetName(),
-		WindowClass::GetName(),
+		name,
 		WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU,
 		CW_USEDEFAULT,CW_USEDEFAULT,rc.right-rc.left,rc.bottom-rc.top,
 		nullptr, nullptr,
 		WindowClass::GetInstance(),
 		this);
+
+	if (hWnd == nullptr)
+	{
+		throw ELWND_LAST_EXCEPT();
+	}
 
 	ShowWindow(hWnd, SW_SHOWDEFAULT);
 }
@@ -63,7 +74,7 @@ Window::~Window()
 	DestroyWindow(hWnd);
 }
 
-LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	if (msg == WM_NCCREATE)
 	{
@@ -76,7 +87,7 @@ LRESULT WINAPI Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-LRESULT WINAPI Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
+LRESULT CALLBACK Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	Window* pWnd = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 	return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
@@ -89,21 +100,53 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_CLOSE:
 	{
 		PostQuitMessage(0);
-		break;
-	}
-	case WM_KEYDOWN:
-	{
-		if (wParam == 'F')
-		{
-			SetWindowText(hWnd, L"F Pressed");
-			break;
-		}
-	}
-	case WM_LBUTTONDOWN:
-	{
-		POINTS pt = MAKEPOINTS(lParam);
-		break;
+		return 0;
 	}
 	}
 	return DefWindowProc(hWnd, msg, wParam, lParam);
+}
+
+Window::Exception::Exception(int line, const char* file, HRESULT hr) noexcept : ElekException(line,file), hr(hr)
+{
+}
+
+const char* Window::Exception::what() const noexcept
+{
+	std::stringstream oss;
+	oss << GetType() << ":" << "[Error Code] " << GetErrorCode() << "-" << GetErrorString() << std::endl << GetOriginString();
+	whatBuffer = oss.str();
+	return whatBuffer.c_str();
+}
+
+const char* Window::Exception::GetType() const noexcept
+{
+	return "Window Exception";
+}
+
+std::string Window::Exception::TranslateErrorCode(HRESULT hr) noexcept
+{
+	char* pMsgBuf = nullptr;
+	const DWORD nMsgLen = FormatMessage(
+		FORMAT_MESSAGE_ALLOCATE_BUFFER |
+		FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		nullptr, hr, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
+		reinterpret_cast<LPWSTR>(&pMsgBuf), 0, nullptr
+	);
+	if (nMsgLen == 0)
+	{
+		return "Unidentified error code";
+	}
+	std::string errorString = pMsgBuf;
+	LocalFree(pMsgBuf);
+	return errorString;
+}
+
+HRESULT Window::Exception::GetErrorCode() const noexcept
+{
+	return hr;
+}
+
+std::string Window::Exception::GetErrorString() const noexcept
+{
+	return TranslateErrorCode(hr);
 }

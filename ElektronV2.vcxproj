@@ -149,12 +149,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\ElekException.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\ElekException.h" />
     <ClInclude Include="include\ElekWin.h" />
     <ClInclude Include="include\Window.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ElektronV2.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\elektron_icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
