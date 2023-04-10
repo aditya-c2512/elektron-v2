@@ -150,12 +150,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ElekException.cpp" />
+    <ClCompile Include="src\ElektronApp.cpp" />
+    <ClCompile Include="src\ElektronGFX.cpp" />
+    <ClCompile Include="src\Keyboard.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ElekException.h" />
+    <ClInclude Include="include\ElektronApp.h" />
+    <ClInclude Include="include\ElektronGFX.h" />
     <ClInclude Include="include\ElekWin.h" />
+    <ClInclude Include="include\Keyboard.h" />
+    <ClInclude Include="include\Mouse.h" />
     <ClInclude Include="include\Window.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>

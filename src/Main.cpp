@@ -1,4 +1,4 @@
-#include "../include/Window.h"
+#include "../include/ElektronApp.h"
 #include "../include/ElekException.h"
 
 //#define _CRT_SECURE_NO_WARNINGS
@@ -17,19 +17,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 {
 	try
 	{
-		Window wnd(800, 800, L"Elektron Engine V2.0");
-		//Window wnd2(300, 300, L"Sidebar");
-
-		MSG msg;
-		BOOL gResult;
-		while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
-		{
-			TranslateMessage(&msg);
-			DispatchMessage(&msg);
-		}
-
-		if (gResult == -1) return -1;
-		else return msg.wParam;
+		return ElektronApp{}.Run();
 	}
 	catch (const ElekException& e)
 	{
