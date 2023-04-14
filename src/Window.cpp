@@ -91,7 +91,7 @@ std::optional<int> Window::ProcessMessages()
 	{
 		if (msg.message == WM_QUIT)
 		{
-			return msg.wParam;
+			return (int)msg.wParam;
 		}
 
 		TranslateMessage(&msg);
@@ -102,6 +102,10 @@ std::optional<int> Window::ProcessMessages()
 
 ElektronGFX& Window::GetGfx()
 {
+	if (!pGfx)
+	{
+		throw ELWND_LAST_EXCEPT();
+	}
 	return *pGfx;
 }
 
