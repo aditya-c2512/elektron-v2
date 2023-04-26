@@ -68,7 +68,7 @@ Window::Window(int width, int height, LPCWSTR name) : width(width), height(heigh
 
 	ShowWindow(hWnd, SW_SHOWDEFAULT);
 
-	pGfx = std::make_unique<ElektronGFX>(hWnd);
+	pGfx = std::make_unique<ElektronGFX>(hWnd, width, height);
 }
 
 Window::~Window()
