@@ -7,7 +7,7 @@
 #include "../include/VertexShader.h"
 #include "../include/Topology.h"
 #include "../include/TransformCBuf.h"
-#include "../include/Cone.h"
+#include "../include/Cube.h"
 
 Box::Box(ElektronGFX& gfx, std::mt19937& rng, std::uniform_real_distribution<float>& adist, std::uniform_real_distribution<float>& ddist, std::uniform_real_distribution<float>& odist, std::uniform_real_distribution<float>& rdist)
 	: r(rdist(rng)),
@@ -29,8 +29,9 @@ Box::Box(ElektronGFX& gfx, std::mt19937& rng, std::uniform_real_distribution<flo
 		{
 			dx::XMFLOAT3 pos;
 		};
-		auto model = Cone::Make<Vertex>();
-		model.Transform(dx::XMMatrixScaling(1.2f, 1.0f, 1.0f));
+		auto model = Cube::Make<Vertex>();
+
+		//model.Transform(dx::XMMatrixScaling(8.0f, 8.0f, 8.0f));
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
 
@@ -79,7 +80,7 @@ Box::Box(ElektronGFX& gfx, std::mt19937& rng, std::uniform_real_distribution<flo
 	}
 	AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
-	dx::XMStoreFloat3x3(&modelTransform, dx::XMMatrixScaling(1.0f,1.0f,adist(rng)));
+	dx::XMStoreFloat3x3(&modelTransform, dx::XMMatrixScaling(1.0f,1.0f,1.0f));
 }
 
 void Box::Update(float dt) noexcept
@@ -94,7 +95,8 @@ void Box::Update(float dt) noexcept
 
 DirectX::XMMATRIX Box::GetTransform() const noexcept
 {
-	return DirectX::XMLoadFloat3x3(&modelTransform) * DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
+	return DirectX::XMLoadFloat3x3(&modelTransform)
+		* DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
 		DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
 		DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
 		DirectX::XMMatrixTranslation(0.0f, 0.0f, 20.0f);

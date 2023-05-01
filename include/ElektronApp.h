@@ -12,6 +12,6 @@ private:
 private:
 	Window wnd;
 	std::vector<std::unique_ptr<Drawable>> drawables;
-	static constexpr size_t nDrawables = 80;
+	static constexpr size_t nDrawables = 1;
 };
 
