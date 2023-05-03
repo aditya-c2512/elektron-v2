@@ -16,7 +16,7 @@ ElektronApp::ElektronApp() : wnd(1000,1000,L"Elektron Engine V2.0")
 		);
 	}
 
-	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 1.0f, 0.5f, 40.0f));
+	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 1.0f, 0.5f, 5.0f));
 }
 
 int ElektronApp::Run()

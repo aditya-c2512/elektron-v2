@@ -1,9 +1,12 @@
-cbuffer ConstantBuffer
-{
-	float4 face_colors[6];
-};
+Texture2D albedo : register(t0);
+
+SamplerState splr;
 
 float4 main(uint trisID : SV_PRIMITIVEID) : SV_TARGET
 {
-	return face_colors[trisID % 6];
+	float2 col;
+	col.x = 0;
+	col.y = 0;
+	return albedo.Sample(splr, col);
+
 }
