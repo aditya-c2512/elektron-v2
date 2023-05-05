@@ -2,13 +2,14 @@
 
 Texture::Texture(ElektronGFX& gfx, std::string& texturePath)
 {
-	texture = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 0);
+	texture = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 4);
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = width;
 	desc.Height = height;
-	desc.MipLevels = desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	desc.SampleDesc.Count = 1;
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -22,7 +23,7 @@ Texture::Texture(ElektronGFX& gfx, std::string& texturePath)
 	GetDevice(gfx)->CreateTexture2D(&desc, &subResData, &pTexture2D);
 
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-	srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	srvDesc.Format = desc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
 	srvDesc.Texture2D.MipLevels = 1;

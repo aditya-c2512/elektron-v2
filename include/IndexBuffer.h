@@ -5,7 +5,7 @@
 class IndexBuffer : public Bindable
 {
 public:
-	IndexBuffer(ElektronGFX& gfx, const std::vector<unsigned short>& indices);
+	IndexBuffer(ElektronGFX& gfx, const std::vector<unsigned int>& indices);
 	void Bind(ElektronGFX& gfx) noexcept override;
 	UINT GetCount() const noexcept;
 private:

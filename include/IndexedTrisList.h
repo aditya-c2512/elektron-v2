@@ -8,7 +8,7 @@ class IndexedTrisList
 {
 public:
 	IndexedTrisList() = default;
-	IndexedTrisList(std::vector<T> vertices_in, std::vector<unsigned short> indices_in)
+	IndexedTrisList(std::vector<T> vertices_in, std::vector<unsigned int> indices_in)
 		: vertices(std::move(vertices_in)), indices(std::move(indices_in))
 	{
 
@@ -26,6 +26,6 @@ public:
 	}
 public:
 	std::vector<T> vertices;
-	std::vector<unsigned short> indices;
+	std::vector<unsigned int> indices;
 };
 

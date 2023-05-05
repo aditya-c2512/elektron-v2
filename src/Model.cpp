@@ -36,13 +36,16 @@ Model::Model(ElektronGFX& gfx, std::string assetPath)
 	{
 		Mesh mesh(scene->mMeshes[meshIdx]);
 		meshes.push_back(mesh);
+		meshes.push_back(mesh);
 	}
-
+	
 	namespace dx = DirectX;
+
+	meshes[1].Transform(dx::XMMatrixTranslation(0.0f, 1.0f, 0.0f));
 
 	if (!isStaticInitialized())
 	{
-		meshes[0].Transform(dx::XMMatrixScaling(8.0f, 8.0f, 8.0f));
+		//meshes[0].Transform(dx::XMMatrixScaling(8.0f, 8.0f, 8.0f));
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, meshes[0].getVertices()));
 

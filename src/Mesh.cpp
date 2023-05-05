@@ -31,7 +31,7 @@ std::vector<Vertex>& Mesh::getVertices() noexcept
     return vertices;
 }
 
-std::vector<unsigned short> Mesh::getIndices() noexcept
+std::vector<unsigned int> Mesh::getIndices() noexcept
 {
     return indices;
 }
