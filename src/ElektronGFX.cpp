@@ -10,8 +10,8 @@ ElektronGFX::ElektronGFX(HWND hWnd, int width, int height) : width(width), heigh
 {
 	// Configure Swap Chain
 	DXGI_SWAP_CHAIN_DESC SwapChainDesc = {};
-	SwapChainDesc.BufferDesc.Width = 0;
-	SwapChainDesc.BufferDesc.Height = 0;
+	SwapChainDesc.BufferDesc.Width = width;
+	SwapChainDesc.BufferDesc.Height = height;
 	SwapChainDesc.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
 	SwapChainDesc.BufferDesc.RefreshRate.Numerator = 0;
 	SwapChainDesc.BufferDesc.RefreshRate.Denominator = 0;
@@ -98,18 +98,32 @@ ElektronGFX::ElektronGFX(HWND hWnd, int width, int height) : width(width), heigh
 	vp.TopLeftY = 0;
 
 	pDeviceContext->RSSetViewports(1, &vp);
+
+	ImGui_ImplDX11_Init(pDevice.Get(), pDeviceContext.Get());
 }
 
 void ElektronGFX::PresentFrame()
 {
+	if (isGuiEnabled)
+	{
+		ImGui::Render();
+		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+	}
 	if (FAILED(pSwapChain->Present(1u, 0u)))
 	{
 		throw ElekException(__LINE__, __FILE__);
 	}
 }
 
-void ElektronGFX::ClearBuffer(float r, float g, float b) noexcept
+void ElektronGFX::BeginFrame(float r, float g, float b) noexcept
 {
+	if (isGuiEnabled)
+	{
+		ImGui_ImplDX11_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+	}
+
 	const float color[] = { r,g,b,1.0f };
 	pDeviceContext->ClearRenderTargetView(pRTView.Get(), color);
 	pDeviceContext->ClearDepthStencilView(pDSView.Get(), D3D11_CLEAR_DEPTH, 1u, 0u);
@@ -117,12 +131,37 @@ void ElektronGFX::ClearBuffer(float r, float g, float b) noexcept
 
 void ElektronGFX::SetProjection(DirectX::FXMMATRIX proj) noexcept
 {
-	projection = proj;
+	projectionMatrix = proj;
 }
 
 DirectX::XMMATRIX ElektronGFX::GetProjection() const noexcept
 {
-	return projection;
+	return projectionMatrix;
+}
+
+void ElektronGFX::SetCamera(DirectX::XMMATRIX camMatrix) noexcept
+{
+	cameraMatrix = camMatrix;
+}
+
+DirectX::XMMATRIX ElektronGFX::GetCamera() const noexcept
+{
+	return cameraMatrix;
+}
+
+void ElektronGFX::EnableGui() noexcept
+{
+	isGuiEnabled = true;
+}
+
+void ElektronGFX::DisableGui() noexcept
+{
+	isGuiEnabled = false;
+}
+
+bool ElektronGFX::IsGuiEnabled() const noexcept
+{
+	return isGuiEnabled;
 }
 
 void ElektronGFX::DrawIndexed(int count)

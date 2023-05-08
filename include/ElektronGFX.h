@@ -1,9 +1,13 @@
 #pragma once
 #include "ElekWin.h"
+
 #include <d3d11.h>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
 #include <wrl.h>
+
+#include "../imgui/imgui_impl_dx11.h"
+#include "../imgui/imgui_impl_win32.h"
 
 namespace dx = DirectX;
 
@@ -16,16 +20,22 @@ public :
 	ElektronGFX& operator=(const ElektronGFX&) = delete;
 
 	void PresentFrame();
-	void ClearBuffer(float r, float g, float b) noexcept;
+	void BeginFrame(float r, float g, float b) noexcept;
 	void DrawIndexed(int count);
 
 	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
+	void SetCamera(DirectX::XMMATRIX camMatrix) noexcept;
+	DirectX::XMMATRIX GetCamera() const noexcept;
+	void EnableGui() noexcept;
+	void DisableGui() noexcept;
+	bool IsGuiEnabled() const noexcept;
 	
 private:
 	int width, height;
-
-	DirectX::XMMATRIX projection;
+	bool isGuiEnabled = true;
+	DirectX::XMMATRIX projectionMatrix;
+	DirectX::XMMATRIX cameraMatrix;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;

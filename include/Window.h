@@ -6,6 +6,8 @@
 #include "Mouse.h"
 #include "ElektronGFX.h"
 
+#include "../imgui/imgui_impl_win32.h"
+
 #include <optional>
 #include <memory>
 

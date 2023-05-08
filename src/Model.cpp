@@ -41,7 +41,7 @@ Model::Model(ElektronGFX& gfx, std::string assetPath)
 	
 	namespace dx = DirectX;
 
-	meshes[1].Transform(dx::XMMatrixTranslation(0.0f, 1.0f, 0.0f));
+	meshes[1].Transform(dx::XMMatrixTranslation(0.0f, 0.0f, 0.0f));
 
 	if (!isStaticInitialized())
 	{
@@ -82,5 +82,5 @@ void Model::Update(float dt) noexcept
 
 DirectX::XMMATRIX Model::GetTransform() const noexcept
 {
-	return DirectX::XMLoadFloat3x3(&modelTransform) * DirectX::XMMatrixRotationY(angle) * DirectX::XMMatrixTranslation(0.25f, -1.0f, 1.0f);
+	return DirectX::XMLoadFloat3x3(&modelTransform) * DirectX::XMMatrixRotationY(angle);
 }

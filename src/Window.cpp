@@ -68,11 +68,14 @@ Window::Window(int width, int height, LPCWSTR name) : width(width), height(heigh
 
 	ShowWindow(hWnd, SW_SHOWDEFAULT);
 
+	ImGui_ImplWin32_Init(hWnd);
+
 	pGfx = std::make_unique<ElektronGFX>(hWnd, width, height);
 }
 
 Window::~Window()
 {
+	ImGui_ImplWin32_Shutdown();
 	DestroyWindow(hWnd);
 }
 
@@ -130,6 +133,13 @@ LRESULT CALLBACK Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPAR
 
 LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+	{
+		return true;
+	}
+
+	ImGuiIO& imIO = ImGui::GetIO();
+
 	switch (msg)
 	{
 	case WM_CLOSE:
@@ -145,6 +155,8 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_KEYDOWN:
 	case WM_SYSKEYDOWN:
 	{
+		if (imIO.WantCaptureKeyboard) break;
+
 		if(!(lParam & 0x40000000) || keyboard.AutorepeatIsEnabled())
 			keyboard.OnKeyPressed(static_cast<unsigned char>(wParam));
 		break;
@@ -152,16 +164,22 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 	case WM_KEYUP:
 	case WM_SYSKEYUP:
 	{
+		if (imIO.WantCaptureKeyboard) break;
+
 		keyboard.OnKeyReleased(static_cast<unsigned char>(wParam));
 		break;
 	}
 	case WM_CHAR:
 	{
+		if (imIO.WantCaptureKeyboard) break;
+
 		keyboard.OnChar(static_cast<unsigned char>(wParam));
 		break;
 	}
 	case WM_MOUSEMOVE:
 	{
+		if (imIO.WantCaptureMouse) break;
+
 		POINTS pt = MAKEPOINTS(lParam);
 
 		if (pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height)

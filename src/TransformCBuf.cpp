@@ -14,7 +14,7 @@ void TransformCBuf::Bind(ElektronGFX& gfx) noexcept
 {
 	pVCBuf->Update(gfx,
 		DirectX::XMMatrixTranspose(
-			parent.GetTransform() * gfx.GetProjection()
+			parent.GetTransform() * gfx.GetCamera() * gfx.GetProjection()
 		)
 	);
 	pVCBuf->Bind(gfx);
