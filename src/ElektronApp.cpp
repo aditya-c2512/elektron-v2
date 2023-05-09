@@ -49,7 +49,7 @@ void ElektronApp::RunFrame()
 
 	if (ImGui::Begin("Demo Simulation Speed"))
 	{
-		ImGui::SliderFloat("Delta Time", &speed_factor, 0.0f, 10.0f);
+		ImGui::SliderFloat("Delta Time", &speed_factor, 0.0f, 100.0f);
 		ImGui::Text("Application Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 	}
 	ImGui::End();

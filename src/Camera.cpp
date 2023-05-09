@@ -35,6 +35,6 @@ void Camera::SpawnControlWindow() noexcept
 
 void Camera::Reset()
 {
-	r = 20.0f;
+	r = 1.0f;
 	theta = phi = roll = pitch = yaw = 0.0f;
 }
