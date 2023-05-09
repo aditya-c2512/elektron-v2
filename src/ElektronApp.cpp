@@ -43,6 +43,7 @@ void ElektronApp::RunFrame()
 	{
 		drawable->Update(dt);
 		drawable->Draw(wnd.GetGfx());
+		drawable->SpawnControlWindow();
 	}
 
 	static char buffer[1024];

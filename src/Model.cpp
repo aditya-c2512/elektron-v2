@@ -82,5 +82,24 @@ void Model::Update(float dt) noexcept
 
 DirectX::XMMATRIX Model::GetTransform() const noexcept
 {
-	return DirectX::XMLoadFloat3x3(&modelTransform) * DirectX::XMMatrixRotationY(angle);
+	return DirectX::XMLoadFloat3x3(&modelTransform) * DirectX::XMMatrixTranslation(pos[0],pos[1],pos[2]) * DirectX::XMMatrixRotationX(angles[0]) * DirectX::XMMatrixRotationY(angles[1]) * DirectX::XMMatrixRotationZ(angles[2]);
+}
+
+void Model::SpawnControlWindow() noexcept
+{
+	if (ImGui::Begin("Model"))
+	{
+		ImGui::Text("POSITION");
+		ImGui::DragFloat3("World Space", pos, 0.001f, -1000.0f, 1000.0f);
+		ImGui::Text("ROTATION");
+		ImGui::SliderAngle("X", &angles[0], -180.0f, 180.0f);
+		ImGui::SliderAngle("Y", &angles[1], -180.0f, 180.0f);
+		ImGui::SliderAngle("Z", &angles[2], -180.0f, 180.0f);
+		if (ImGui::Button("RESET"))
+		{
+			pos[0] = pos[1] = pos[2] = 0.0f;
+			angles[0] = angles[1] = angles[2] = 0.0f;
+		}
+	}
+	ImGui::End();
 }
