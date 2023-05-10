@@ -1,4 +1,4 @@
-#include "../include/Texture.h"
+#include "../include/bindables/Texture.h"
 
 Texture::Texture(ElektronGFX& gfx, std::string& texturePath)
 {

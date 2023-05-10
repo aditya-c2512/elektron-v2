@@ -1,4 +1,4 @@
-#include "../include/Sampler.h"
+#include "../include/bindables/Sampler.h"
 
 Sampler::Sampler(ElektronGFX& gfx)
 {

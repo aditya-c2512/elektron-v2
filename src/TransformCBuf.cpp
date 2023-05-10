@@ -1,4 +1,4 @@
-#include "../include/TransformCBuf.h"
+#include "../include/bindables/TransformCBuf.h"
 
 TransformCBuf::TransformCBuf(ElektronGFX& gfx, const Drawable& parent)
 	:

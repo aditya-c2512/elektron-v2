@@ -1,4 +1,4 @@
-#include "../include/PixelShader.h"
+#include "../include/bindables/PixelShader.h"
 
 PixelShader::PixelShader(ElektronGFX& gfx, const std::wstring& path)
 {

@@ -1,4 +1,4 @@
-#include "../include/IndexBuffer.h"
+#include "../include/bindables/IndexBuffer.h"
 
 IndexBuffer::IndexBuffer(ElektronGFX& gfx, const std::vector<unsigned int>& indices) : count((UINT)indices.size())
 {

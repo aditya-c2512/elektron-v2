@@ -1,4 +1,4 @@
-#include "../include/VertexShader.h"
+#include "../include/bindables/VertexShader.h"
 
 VertexShader::VertexShader(ElektronGFX& gfx, const std::wstring& path)
 {

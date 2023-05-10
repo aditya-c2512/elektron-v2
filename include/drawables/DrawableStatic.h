@@ -1,6 +1,6 @@
 #pragma once
 #include "Drawable.h"
-#include "IndexBuffer.h"
+#include "../bindables/IndexBuffer.h"
 
 template<class T>
 class DrawableStatic : public Drawable

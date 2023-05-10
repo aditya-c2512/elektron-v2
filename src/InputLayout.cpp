@@ -1,4 +1,4 @@
-#include "../include/InputLayout.h"
+#include "../include/bindables/InputLayout.h"
 
 InputLayout::InputLayout(ElektronGFX& gfx, const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* pVertexShaderBytecode)
 {

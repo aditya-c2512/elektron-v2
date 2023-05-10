@@ -1,18 +1,19 @@
 #define STB_IMAGE_IMPLEMENTATION
-#include "../include/Model.h"
+#include "../include/drawables/Model.h"
 #include "../include/ElekException.h"
 
 #include "../include/Vertex.h"
-#include "../include/ConstantBuffer.h"
-#include "../include/Texture.h"
-#include "../include/Sampler.h"
-#include "../include/IndexBuffer.h"
-#include "../include/InputLayout.h"
-#include "../include/PixelShader.h"
-#include "../include/VertexBuffer.h"
-#include "../include/VertexShader.h"
-#include "../include/Topology.h"
-#include "../include/TransformCBuf.h"
+#include "../include/bindables/ConstantBuffer.h"
+#include "../include/bindables/Texture.h"
+#include "../include/bindables/Sampler.h"
+#include "../include/bindables/IndexBuffer.h"
+#include "../include/bindables/InputLayout.h"
+#include "../include/bindables/PixelShader.h"
+#include "../include/bindables/VertexBuffer.h"
+#include "../include/bindables/VertexShader.h"
+#include "../include/bindables/Topology.h"
+#include "../include/bindables/TransformCBuf.h"
+
 
 #include <assimp/Importer.hpp>
 

@@ -2,7 +2,7 @@
 
 #include "Bindable.h"
 //#define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "../stb_image.h"
 #include <string>
 
 class Texture : public Bindable

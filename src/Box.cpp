@@ -1,13 +1,13 @@
-#include "../include/Box.h"
-#include "../include/ConstantBuffer.h"
-#include "../include/IndexBuffer.h"
-#include "../include/InputLayout.h"
-#include "../include/PixelShader.h"
-#include "../include/VertexBuffer.h"
-#include "../include/VertexShader.h"
-#include "../include/Topology.h"
-#include "../include/TransformCBuf.h"
-#include "../include/Cube.h"
+#include "../include/drawables/Box.h"
+#include "../include/bindables/ConstantBuffer.h"
+#include "../include/bindables/IndexBuffer.h"
+#include "../include/bindables/InputLayout.h"
+#include "../include/bindables/PixelShader.h"
+#include "../include/bindables/VertexBuffer.h"
+#include "../include/bindables/VertexShader.h"
+#include "../include/bindables/Topology.h"
+#include "../include/bindables/TransformCBuf.h"
+#include "../include/drawables/Cube.h"
 
 Box::Box(ElektronGFX& gfx, std::mt19937& rng, std::uniform_real_distribution<float>& adist, std::uniform_real_distribution<float>& ddist, std::uniform_real_distribution<float>& odist, std::uniform_real_distribution<float>& rdist)
 	: r(rdist(rng)),

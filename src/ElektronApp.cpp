@@ -1,5 +1,5 @@
 #include "../include/ElektronApp.h"
-#include "../include/Model.h"
+#include "../include/drawables/Model.h"
 #include <memory>
 
 #include "../imgui/imgui.h"

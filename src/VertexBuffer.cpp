@@ -1,4 +1,4 @@
-#include "../include/VertexBuffer.h"
+#include "../include/bindables/VertexBuffer.h"
 
 void VertexBuffer::Bind(ElektronGFX& gfx) noexcept
 {

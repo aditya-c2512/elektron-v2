@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ElektronGFX.h"
+#include "../ElektronGFX.h"
 #include <vector>
 
 class Bindable

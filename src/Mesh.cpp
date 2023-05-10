@@ -1,4 +1,4 @@
-#include "../include/Mesh.h"
+#include "../include/drawables/Mesh.h"
 
 Mesh::Mesh(aiMesh* mesh)
 {

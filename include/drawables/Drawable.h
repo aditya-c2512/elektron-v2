@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ElektronGFX.h"
+#include "../ElektronGFX.h"
 #include <DirectXMath.h>
 #include <memory>
 #include <vector>

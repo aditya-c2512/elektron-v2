@@ -1,4 +1,4 @@
-#include "../include/Bindable.h"
+#include "../include/bindables/Bindable.h"
 
 ID3D11DeviceContext* Bindable::GetContext(ElektronGFX& gfx) noexcept
 {

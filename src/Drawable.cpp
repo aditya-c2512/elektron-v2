@@ -1,6 +1,6 @@
-#include "../include/Drawable.h"
-#include "../include/Bindable.h"
-#include "../include/IndexBuffer.h"
+#include "../include/drawables/Drawable.h"
+#include "../include/bindables/Bindable.h"
+#include "../include/bindables/IndexBuffer.h"
 
 void Drawable::Draw(ElektronGFX& gfx) const noexcept
 {
