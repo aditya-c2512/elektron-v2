@@ -1,5 +1,6 @@
 #pragma once
 #include "Bindable.h"
+#include "../ElekException.h"
 #include <cstring>
 
 template<typename C>
@@ -19,7 +20,7 @@ public:
 	}
 	ConstantBuffer(ElektronGFX& gfx, const C& consts)
 	{
-		D3D11_BUFFER_DESC cbd;
+		D3D11_BUFFER_DESC cbd = {};
 		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		cbd.Usage = D3D11_USAGE_DYNAMIC;
 		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
@@ -33,13 +34,14 @@ public:
 	}
 	ConstantBuffer(ElektronGFX& gfx)
 	{
-		D3D11_BUFFER_DESC cbd;
+		D3D11_BUFFER_DESC cbd = {};
 		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
 		cbd.Usage = D3D11_USAGE_DYNAMIC;
 		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		cbd.MiscFlags = 0u;
 		cbd.ByteWidth = sizeof(C);
 		cbd.StructureByteStride = 0u;
+
 		GetDevice(gfx)->CreateBuffer(&cbd, nullptr, &pConstantBuffer);
 	}
 protected:

@@ -4,7 +4,7 @@
 
 #include "../imgui/imgui.h"
 
-ElektronApp::ElektronApp() : width(1920), height(1080), wnd(1920,1080,L"Elektron Engine V2.0")
+ElektronApp::ElektronApp() : width(1920), height(1080), wnd(1920,1080,L"Elektron Engine V2.0"), pointLight(wnd.GetGfx())
 {
 	drawables.reserve(nDrawables);
 
@@ -39,6 +39,8 @@ void ElektronApp::RunFrame()
 
 	wnd.GetGfx().SetCamera(cam.GetMatrix());
 
+	pointLight.Bind(wnd.GetGfx());
+
 	for (auto& drawable : drawables)
 	{
 		drawable->Update(dt);
@@ -46,9 +48,9 @@ void ElektronApp::RunFrame()
 		drawable->SpawnControlWindow();
 	}
 
-	static char buffer[1024];
+	//pointLight.Draw(wnd.GetGfx());
 
-	if (ImGui::Begin("Demo Simulation Speed"))
+	if (ImGui::Begin("Demo Simulation Speed", NULL, ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize))
 	{
 		ImGui::SliderFloat("Delta Time", &speed_factor, 0.0f, 100.0f);
 		ImGui::Text("Application Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
@@ -56,6 +58,9 @@ void ElektronApp::RunFrame()
 	ImGui::End();
 
 	cam.SpawnControlWindow();
+	pointLight.SpawnControlWindow();
+
+	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height / width, cam.near_plane, cam.far_plane));
 
 	wnd.GetGfx().PresentFrame();
 }

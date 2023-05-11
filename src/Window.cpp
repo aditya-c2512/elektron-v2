@@ -42,9 +42,9 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept
 Window::Window(int width, int height, LPCWSTR name) : width(width), height(height)
 {
 	RECT rc;
-	rc.left = 100;
+	rc.left = 0;
 	rc.right = rc.left + width;
-	rc.top = 100;
+	rc.top = 0;
 	rc.bottom = rc.top + height;
 
 	if ((AdjustWindowRect(&rc, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)) == 0)

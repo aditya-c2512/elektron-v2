@@ -27,6 +27,7 @@ ElektronGFX::ElektronGFX(HWND hWnd, int width, int height) : width(width), heigh
 	SwapChainDesc.Flags = 0;
 
 	// Create the D3D11 Device, Device Context, and Swap Chain
+
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(
 		nullptr,
 		D3D_DRIVER_TYPE_HARDWARE,

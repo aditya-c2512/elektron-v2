@@ -14,6 +14,7 @@ namespace dx = DirectX;
 class ElektronGFX
 {
 	friend class Bindable;
+	friend class PointLight;
 public :
 	ElektronGFX(HWND hWnd, int width, int height);
 	ElektronGFX(const ElektronGFX&) = delete;

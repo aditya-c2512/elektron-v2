@@ -26,7 +26,7 @@ Model::Model(ElektronGFX& gfx, std::string assetPath)
     const aiScene* scene = importer.ReadFile(assetPath,
         aiProcess_CalcTangentSpace |
         aiProcess_Triangulate |
-        aiProcess_JoinIdenticalVertices);
+        aiProcess_JoinIdenticalVertices | aiProcess_GenNormals);
 
     // If the import failed, report it
     if (scene == nullptr) {
@@ -37,28 +37,32 @@ Model::Model(ElektronGFX& gfx, std::string assetPath)
 	{
 		Mesh mesh(scene->mMeshes[meshIdx]);
 		meshes.push_back(mesh);
-		meshes.push_back(mesh);
+		//meshes.push_back(mesh);
 	}
+
 	
 	namespace dx = DirectX;
 
-	meshes[1].Transform(dx::XMMatrixTranslation(0.0f, 0.0f, 0.0f));
-
 	if (!isStaticInitialized())
 	{
-		//meshes[0].Transform(dx::XMMatrixScaling(8.0f, 8.0f, 8.0f));
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, meshes[0].getVertices()));
 
-		auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
+		/*auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
 		auto pVSByteCode = pVertexShader->GetBytecode();
 		AddStaticBind(std::move(pVertexShader));
 
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
-		
+
 		std::string texturePath = "C:/Projects/elektron-v2/assets/models/textures/bunny_red.png";
 		AddStaticBind(std::make_unique<Texture>(gfx, texturePath));
-		AddStaticBind(std::make_unique<Sampler>(gfx));
+		AddStaticBind(std::make_unique<Sampler>(gfx));*/
+
+		auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VS_Phong.cso");
+		auto pVSByteCode = pVertexShader->GetBytecode();
+		AddStaticBind(std::move(pVertexShader));
+
+		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PS_Phong.cso"));
 
 		AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, meshes[0].getIndices()));
 
@@ -88,7 +92,7 @@ DirectX::XMMATRIX Model::GetTransform() const noexcept
 
 void Model::SpawnControlWindow() noexcept
 {
-	if (ImGui::Begin("Model"))
+	if (ImGui::Begin("Model", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 	{
 		ImGui::Text("POSITION");
 		ImGui::DragFloat3("World Space", pos, 0.001f, -1000.0f, 1000.0f);

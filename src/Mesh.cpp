@@ -5,15 +5,17 @@ Mesh::Mesh(aiMesh* mesh)
     for (unsigned int vIdx = 0; vIdx < mesh->mNumVertices; vIdx++)
     {
         aiVector3D aiVertex = mesh->mVertices[vIdx];
-
+        aiVector3D aiNorm = mesh->mNormals[vIdx];
         //aiVector3D aiTexCoord = mesh->mTextureCoords[vIdx][0];
 
         Vertex vert;
         vert.pos.x = aiVertex.x;
         vert.pos.y = aiVertex.y;
         vert.pos.z = aiVertex.z;
-        //vert.texCoords.x = aiTexCoord.x;
-        //vert.texCoords.y = aiTexCoord.y;
+        
+        vert.n.x = aiNorm.x;
+        vert.n.y = aiNorm.y;
+        vert.n.z = aiNorm.z;
 
         vertices.push_back(vert);
     }

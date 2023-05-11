@@ -7,5 +7,6 @@ ID3D11DeviceContext* Bindable::GetContext(ElektronGFX& gfx) noexcept
 
 ID3D11Device* Bindable::GetDevice(ElektronGFX& gfx) noexcept
 {
+
 	return gfx.pDevice.Get();
 }
