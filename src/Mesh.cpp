@@ -17,6 +17,9 @@ Mesh::Mesh(aiMesh* mesh)
         vert.n.y = aiNorm.y;
         vert.n.z = aiNorm.z;
 
+        vert.texCoords.x = 0;
+        vert.texCoords.y = 0;
+
         vertices.push_back(vert);
     }
     for (unsigned int fIdx = 0; fIdx < mesh->mNumFaces; fIdx++)

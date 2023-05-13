@@ -38,19 +38,19 @@ public:
 		}
 
 		// add the cap vertices
-		const auto iNorthPole = (unsigned short)vertices.size();
+		const auto iNorthPole = (unsigned int)vertices.size();
 		vertices.emplace_back();
 		dx::XMStoreFloat3(&vertices.back().pos, base);
-		const auto iSouthPole = (unsigned short)vertices.size();
+		const auto iSouthPole = (unsigned int)vertices.size();
 		vertices.emplace_back();
 		dx::XMStoreFloat3(&vertices.back().pos, dx::XMVectorNegate(base));
 
-		const auto calcIdx = [latDiv, longDiv](unsigned short iLat, unsigned short iLong)
+		const auto calcIdx = [latDiv, longDiv](unsigned int iLat, unsigned int iLong)
 		{ return iLat * longDiv + iLong; };
-		std::vector<unsigned short> indices;
-		for (unsigned short iLat = 0; iLat < latDiv - 2; iLat++)
+		std::vector<unsigned int> indices;
+		for (unsigned int iLat = 0; iLat < latDiv - 2; iLat++)
 		{
-			for (unsigned short iLong = 0; iLong < longDiv - 1; iLong++)
+			for (unsigned int iLong = 0; iLong < longDiv - 1; iLong++)
 			{
 				indices.push_back(calcIdx(iLat, iLong));
 				indices.push_back(calcIdx(iLat + 1, iLong));
@@ -69,7 +69,7 @@ public:
 		}
 
 		// cap fans
-		for (unsigned short iLong = 0; iLong < longDiv - 1; iLong++)
+		for (unsigned int iLong = 0; iLong < longDiv - 1; iLong++)
 		{
 			// north
 			indices.push_back(iNorthPole);

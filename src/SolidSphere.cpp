@@ -1,5 +1,5 @@
 #include "../include/drawables/SolidSphere.h"
-#include "../include/drawables/Cube.h"
+#include "../include/drawables/Sphere.h"
 #include "../include/bindables/Bindable.h"
 #include "../include/bindables/Bindables.h"
 
@@ -13,7 +13,7 @@ SolidSphere::SolidSphere(ElektronGFX& gfx, float radius)
 		{
 			dx::XMFLOAT3 pos;
 		};
-		auto model = Cube::Make<Vertex>();
+		auto model = Sphere::Make<Vertex>();
 		model.Transform(dx::XMMatrixScaling(radius, radius, radius));
 		AddBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
 		AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, model.indices));
@@ -27,7 +27,9 @@ SolidSphere::SolidSphere(ElektronGFX& gfx, float radius)
 		struct PSColorConstant
 		{
 			dx::XMFLOAT3 color = { 1.0f,1.0f,1.0f };
+			float padding;
 		} colorConst;
+		colorConst.color = { 1.0f,1.0f,1.0f };
 		AddStaticBind(std::make_unique<PixelConstantBuffer<PSColorConstant>>(gfx, colorConst));
 
 		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =

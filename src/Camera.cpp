@@ -18,7 +18,7 @@ void Camera::SpawnControlWindow() noexcept
 	if (ImGui::Begin("Camera", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
 	{
 		ImGui::Text("POSITION");
-		ImGui::SliderFloat("Radius", &r, 0.1f, 40.0f, "%.1f");
+		ImGui::SliderFloat("Radius", &r, 0.1f, 40.0f, "%.3f");
 		ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
 		ImGui::SliderAngle("Phi", &phi, -89.0f, 89.0f);
 		ImGui::Text("ORIENTATION");
@@ -26,7 +26,7 @@ void Camera::SpawnControlWindow() noexcept
 		ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
 		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 		ImGui::Text("PROJECTION PLANES");
-		ImGui::SliderFloat("Near Plane", &near_plane, 0.01f, 100.0f);
+		ImGui::SliderFloat("Near Plane", &near_plane, 0.01f, 10.0f,"%.3f");
 		ImGui::SliderFloat("Far Plane", &far_plane, 0.01f, 100.0f);
 		if (ImGui::Button("RESET"))
 		{

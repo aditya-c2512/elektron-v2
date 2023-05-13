@@ -1,25 +1,24 @@
 #include "../include/bindables/TransformCBuf.h"
 
-TransformCBuf::TransformCBuf(ElektronGFX& gfx, const Drawable& parent)
+TransformCBuf::TransformCBuf(ElektronGFX& gfx, const Drawable& parent, UINT slot)
 	:
 	parent(parent)
 {
 	if (!pVCBuf)
 	{
-		pVCBuf = std::make_unique<VertexConstantBuffer<Transforms>>(gfx);
+		pVCBuf = std::make_unique<VertexConstantBuffer<Transforms>>(gfx,slot);
 		//pVCBuf = std::make_unique<VertexConstantBuffer<DirectX::XMMATRIX>>(gfx);
 	}
 }
 
 void TransformCBuf::Bind(ElektronGFX& gfx) noexcept
 {
-	const auto model = parent.GetTransform();
+	const auto modelView = parent.GetTransform() * gfx.GetCamera();
 	const Transforms tf =
 	{
-		DirectX::XMMatrixTranspose(model),
+		DirectX::XMMatrixTranspose(modelView),
 		DirectX::XMMatrixTranspose(
-			model *
-			gfx.GetCamera() *
+			modelView *
 			gfx.GetProjection()
 		)
 	};

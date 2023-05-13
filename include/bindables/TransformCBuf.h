@@ -13,7 +13,7 @@ private:
 		DirectX::XMMATRIX modelViewProj;
 	};
 public:
-	TransformCBuf(ElektronGFX& gfx, const Drawable& parent);
+	TransformCBuf(ElektronGFX& gfx, const Drawable& parent, UINT slot = 0);
 	void Bind(ElektronGFX& gfx) noexcept override;
 private:
 	static std::unique_ptr<VertexConstantBuffer<Transforms>> pVCBuf;

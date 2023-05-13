@@ -39,7 +39,7 @@ Model::Model(ElektronGFX& gfx, std::string assetPath)
 		meshes.push_back(mesh);
 		//meshes.push_back(mesh);
 	}
-
+	meshes[0].Transform(DirectX::XMMatrixScaling(3.0f, 3.0f, 3.0f));
 	
 	namespace dx = DirectX;
 
@@ -48,21 +48,15 @@ Model::Model(ElektronGFX& gfx, std::string assetPath)
 
 		AddStaticBind(std::make_unique<VertexBuffer>(gfx, meshes[0].getVertices()));
 
-		/*auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
-		auto pVSByteCode = pVertexShader->GetBytecode();
-		AddStaticBind(std::move(pVertexShader));
-
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
-
-		std::string texturePath = "C:/Projects/elektron-v2/assets/models/textures/bunny_red.png";
-		AddStaticBind(std::make_unique<Texture>(gfx, texturePath));
-		AddStaticBind(std::make_unique<Sampler>(gfx));*/
-
 		auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VS_Phong.cso");
 		auto pVSByteCode = pVertexShader->GetBytecode();
 		AddStaticBind(std::move(pVertexShader));
 
 		AddStaticBind(std::make_unique<PixelShader>(gfx, L"PS_Phong.cso"));
+
+		std::string texturePath = "C:/Projects/elektron-v2/assets/models/textures/bunny_red.png";
+		AddStaticBind(std::make_unique<Texture>(gfx, texturePath));
+		AddStaticBind(std::make_unique<Sampler>(gfx));
 
 		AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, meshes[0].getIndices()));
 
@@ -76,13 +70,24 @@ Model::Model(ElektronGFX& gfx, std::string assetPath)
 	}
 	AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
+	struct PSMaterialBuffer
+	{
+		float intensity_specular;
+		float power_specular;
+		float padding[2];
+	} materialBuff;
+	materialBuff.intensity_specular = intensity_specular;
+	materialBuff.power_specular = power_specular;
+
+	AddBind(std::make_unique<PixelConstantBuffer<PSMaterialBuffer>>(gfx, materialBuff, 1));
+
 	dx::XMStoreFloat3x3(&modelTransform, dx::XMMatrixScaling(1.0f, 1.0f, 1.0f));
 
 }
 
 void Model::Update(float dt) noexcept
 {
-	angle += dt;
+	// Delta Time based Update
 }
 
 DirectX::XMMATRIX Model::GetTransform() const noexcept

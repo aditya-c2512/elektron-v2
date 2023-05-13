@@ -4,7 +4,7 @@
 
 #include "../imgui/imgui.h"
 
-ElektronApp::ElektronApp() : width(1920), height(1080), wnd(1920,1080,L"Elektron Engine V2.0"), pointLight(wnd.GetGfx())
+ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080), wnd(1920,1080,L"Elektron Engine V2.0"), pointLight(wnd.GetGfx())
 {
 	drawables.reserve(nDrawables);
 
@@ -39,7 +39,7 @@ void ElektronApp::RunFrame()
 
 	wnd.GetGfx().SetCamera(cam.GetMatrix());
 
-	pointLight.Bind(wnd.GetGfx());
+	pointLight.Bind(wnd.GetGfx(), cam.GetMatrix());
 
 	for (auto& drawable : drawables)
 	{
@@ -48,7 +48,7 @@ void ElektronApp::RunFrame()
 		drawable->SpawnControlWindow();
 	}
 
-	//pointLight.Draw(wnd.GetGfx());
+	pointLight.Draw(wnd.GetGfx());
 
 	if (ImGui::Begin("Demo Simulation Speed", NULL, ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize))
 	{

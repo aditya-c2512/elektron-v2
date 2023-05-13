@@ -30,16 +30,16 @@ public:
 		// the center
 		vertices.emplace_back();
 		vertices.back().pos = { 0.0f,0.0f,-1.0f };
-		const auto iCenter = (unsigned short)(vertices.size() - 1);
+		const auto iCenter = (unsigned int)(vertices.size() - 1);
 		// the tip :darkness:
 		vertices.emplace_back();
 		vertices.back().pos = { 0.0f,0.0f,1.0f };
-		const auto iTip = (unsigned short)(vertices.size() - 1);
+		const auto iTip = (unsigned int)(vertices.size() - 1);
 
 
 		// base indices
-		std::vector<unsigned short> indices;
-		for (unsigned short iLong = 0; iLong < longDiv; iLong++)
+		std::vector<unsigned int> indices;
+		for (unsigned int iLong = 0; iLong < longDiv; iLong++)
 		{
 			indices.push_back(iCenter);
 			indices.push_back((iLong + 1) % longDiv);
@@ -47,7 +47,7 @@ public:
 		}
 
 		// cone indices
-		for (unsigned short iLong = 0; iLong < longDiv; iLong++)
+		for (unsigned int iLong = 0; iLong < longDiv; iLong++)
 		{
 			indices.push_back(iLong);
 			indices.push_back((iLong + 1) % longDiv);
