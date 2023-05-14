@@ -16,8 +16,14 @@ public:
 	Drawable(const Drawable&) = delete;
 	virtual DirectX::XMMATRIX GetTransform() const noexcept = 0;
 	void Draw(ElektronGFX& gfx) const noexcept;
-	virtual void Update(float deltaTime) noexcept = 0;
-	virtual void SpawnControlWindow() noexcept = 0;
+	virtual void Update(float deltaTime) noexcept
+	{
+
+	}
+	virtual void SpawnControlWindow() noexcept
+	{
+
+	}
 	virtual ~Drawable() = default;
 protected:
 	void AddBind(std::unique_ptr<Bindable> bind) noexcept;

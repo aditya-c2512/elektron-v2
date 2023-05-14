@@ -181,6 +181,7 @@
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Model.cpp" />
+    <ClCompile Include="src\ModelGraph.cpp" />
     <ClCompile Include="src\Mouse.cpp" />
     <ClCompile Include="src\PixelShader.cpp" />
     <ClCompile Include="src\PointLight.cpp" />
@@ -223,6 +224,7 @@
     <ClInclude Include="include\drawables\IndexedTrisList.h" />
     <ClInclude Include="include\drawables\Mesh.h" />
     <ClInclude Include="include\drawables\Model.h" />
+    <ClInclude Include="include\drawables\ModelGraph.h" />
     <ClInclude Include="include\drawables\Plane.h" />
     <ClInclude Include="include\drawables\Prism.h" />
     <ClInclude Include="include\drawables\SolidSphere.h" />

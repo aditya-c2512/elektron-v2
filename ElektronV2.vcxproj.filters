@@ -129,6 +129,9 @@
     <ClCompile Include="src\SolidSphere.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="src\ModelGraph.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ElekWin.h">
@@ -265,6 +268,9 @@
     </ClInclude>
     <ClInclude Include="include\bindables\Bindables.h">
       <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="include\drawables\ModelGraph.h">
+      <Filter>Header Files\Drawable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
