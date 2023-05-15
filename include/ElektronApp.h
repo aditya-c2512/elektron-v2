@@ -14,6 +14,7 @@ public:
 private:
 	void RunFrame();
 	void SpawnModelControlWindow();
+	void SpawnViewportWindow();
 private:
 	float width, height;
 
@@ -30,7 +31,7 @@ private:
 
 	struct
 	{
-		float roll = -90.0f;
+		float roll = 0.0f;
 		float pitch = 0.0f;
 		float yaw = 0.0f;
 		float x = 0.0f;

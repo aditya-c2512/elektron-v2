@@ -134,7 +134,7 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 
 	bindablePtrs.push_back(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
-	std::string texturePath = "C:/Projects/elektron-v2/assets/models/nanosuit/NanoSuit_us.png";
+	std::string texturePath = "C:/Projects/elektron-v2/assets/models/nanosuit/glass_dif.png";
 	bindablePtrs.push_back(std::make_unique<Texture>(gfx, texturePath));
 	bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 

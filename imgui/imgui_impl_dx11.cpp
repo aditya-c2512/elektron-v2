@@ -32,21 +32,21 @@
 #endif
 
 // DirectX data
-static ID3D11Device*            g_pd3dDevice = NULL;
-static ID3D11DeviceContext*     g_pd3dDeviceContext = NULL;
-static IDXGIFactory*            g_pFactory = NULL;
-static ID3D11Buffer*            g_pVB = NULL;
-static ID3D11Buffer*            g_pIB = NULL;
-static ID3D10Blob*              g_pVertexShaderBlob = NULL;
-static ID3D11VertexShader*      g_pVertexShader = NULL;
-static ID3D11InputLayout*       g_pInputLayout = NULL;
-static ID3D11Buffer*            g_pVertexConstantBuffer = NULL;
-static ID3D10Blob*              g_pPixelShaderBlob = NULL;
-static ID3D11PixelShader*       g_pPixelShader = NULL;
-static ID3D11SamplerState*      g_pFontSampler = NULL;
-static ID3D11ShaderResourceView*g_pFontTextureView = NULL;
-static ID3D11RasterizerState*   g_pRasterizerState = NULL;
-static ID3D11BlendState*        g_pBlendState = NULL;
+static ID3D11Device* g_pd3dDevice = NULL;
+static ID3D11DeviceContext* g_pd3dDeviceContext = NULL;
+static IDXGIFactory* g_pFactory = NULL;
+static ID3D11Buffer* g_pVB = NULL;
+static ID3D11Buffer* g_pIB = NULL;
+static ID3D10Blob* g_pVertexShaderBlob = NULL;
+static ID3D11VertexShader* g_pVertexShader = NULL;
+static ID3D11InputLayout* g_pInputLayout = NULL;
+static ID3D11Buffer* g_pVertexConstantBuffer = NULL;
+static ID3D10Blob* g_pPixelShaderBlob = NULL;
+static ID3D11PixelShader* g_pPixelShader = NULL;
+static ID3D11SamplerState* g_pFontSampler = NULL;
+static ID3D11ShaderResourceView* g_pFontTextureView = NULL;
+static ID3D11RasterizerState* g_pRasterizerState = NULL;
+static ID3D11BlendState* g_pBlendState = NULL;
 static ID3D11DepthStencilState* g_pDepthStencilState = NULL;
 static int                      g_VertexBufferSize = 5000, g_IndexBufferSize = 10000;
 
@@ -122,10 +122,10 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
         float B = draw_data->DisplayPos.y + draw_data->DisplaySize.y;
         float mvp[4][4] =
         {
-            { 2.0f/(R-L),   0.0f,           0.0f,       0.0f },
-            { 0.0f,         2.0f/(T-B),     0.0f,       0.0f },
+            { 2.0f / (R - L),   0.0f,           0.0f,       0.0f },
+            { 0.0f,         2.0f / (T - B),     0.0f,       0.0f },
             { 0.0f,         0.0f,           0.5f,       0.0f },
-            { (R+L)/(L-R),  (T+B)/(B-T),    0.5f,       1.0f },
+            { (R + L) / (L - R),  (T + B) / (B - T),    0.5f,       1.0f },
         };
         memcpy(&constant_buffer->mvp, mvp, sizeof(mvp));
         ctx->Unmap(g_pVertexConstantBuffer, 0);
@@ -137,23 +137,23 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
         UINT                        ScissorRectsCount, ViewportsCount;
         D3D11_RECT                  ScissorRects[D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
         D3D11_VIEWPORT              Viewports[D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE];
-        ID3D11RasterizerState*      RS;
-        ID3D11BlendState*           BlendState;
+        ID3D11RasterizerState* RS;
+        ID3D11BlendState* BlendState;
         FLOAT                       BlendFactor[4];
         UINT                        SampleMask;
         UINT                        StencilRef;
-        ID3D11DepthStencilState*    DepthStencilState;
-        ID3D11ShaderResourceView*   PSShaderResource;
-        ID3D11SamplerState*         PSSampler;
-        ID3D11PixelShader*          PS;
-        ID3D11VertexShader*         VS;
+        ID3D11DepthStencilState* DepthStencilState;
+        ID3D11ShaderResourceView* PSShaderResource;
+        ID3D11SamplerState* PSSampler;
+        ID3D11PixelShader* PS;
+        ID3D11VertexShader* VS;
         UINT                        PSInstancesCount, VSInstancesCount;
-        ID3D11ClassInstance*        PSInstances[256], *VSInstances[256];   // 256 is max according to PSSetShader documentation
+        ID3D11ClassInstance* PSInstances[256], * VSInstances[256];   // 256 is max according to PSSetShader documentation
         D3D11_PRIMITIVE_TOPOLOGY    PrimitiveTopology;
-        ID3D11Buffer*               IndexBuffer, *VertexBuffer, *VSConstantBuffer;
+        ID3D11Buffer* IndexBuffer, * VertexBuffer, * VSConstantBuffer;
         UINT                        IndexBufferOffset, VertexBufferStride, VertexBufferOffset;
         DXGI_FORMAT                 IndexBufferFormat;
-        ID3D11InputLayout*          InputLayout;
+        ID3D11InputLayout* InputLayout;
     };
     BACKUP_DX11_STATE old;
     old.ScissorRectsCount = old.ViewportsCount = D3D11_VIEWPORT_AND_SCISSORRECT_OBJECT_COUNT_PER_PIPELINE;
@@ -176,7 +176,7 @@ void ImGui_ImplDX11_RenderDrawData(ImDrawData* draw_data)
     // Setup viewport
     D3D11_VIEWPORT vp;
     memset(&vp, 0, sizeof(D3D11_VIEWPORT));
-    vp.Width =  draw_data->DisplaySize.x;
+    vp.Width = draw_data->DisplaySize.x;
     vp.Height = draw_data->DisplaySize.y;
     vp.MinDepth = 0.0f;
     vp.MaxDepth = 1.0f;
@@ -273,7 +273,7 @@ static void ImGui_ImplDX11_CreateFontsTexture()
         desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
         desc.CPUAccessFlags = 0;
 
-        ID3D11Texture2D *pTexture = NULL;
+        ID3D11Texture2D* pTexture = NULL;
         D3D11_SUBRESOURCE_DATA subResource;
         subResource.pSysMem = pixels;
         subResource.SysMemPitch = desc.Width * 4;

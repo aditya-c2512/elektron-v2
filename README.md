@@ -11,7 +11,11 @@
 ## FUTURE WORK
 - [x] Camera system
 - [x] Dear ImGui Integration
-- [ ] Lights and Shading
-- [ ] Multiple Mesh Loading from single file
+- [x] Lights and Shading
+- [x] Model Scene Graph
 - [ ] Material Loading
+- [ ] Dear ImGUI Docking and Viewport => Update Dear ImGUI version
+- [ ] Multiple Lights Shading and UI support
+- [ ] HDRI Skybox
+- [ ] Shadow Mapping
 - [ ] Voxel Cone Tracing Global Illumination (VXGI)

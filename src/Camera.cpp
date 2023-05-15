@@ -15,10 +15,10 @@ DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 
 void Camera::SpawnControlWindow() noexcept
 {
-	if (ImGui::Begin("Camera", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
+	if (ImGui::Begin("Camera", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("POSITION");
-		ImGui::SliderFloat("Radius", &r, 0.1f, 40.0f, "%.3f");
+		ImGui::SliderFloat("Radius", &r, 0.1f, 100.0f, "%.3f");
 		ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
 		ImGui::SliderAngle("Phi", &phi, -89.0f, 89.0f);
 		ImGui::Text("ORIENTATION");
