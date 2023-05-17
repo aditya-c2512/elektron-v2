@@ -15,7 +15,7 @@ DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 
 void Camera::SpawnControlWindow() noexcept
 {
-	if (ImGui::Begin("Camera", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize))
+	if (ImGui::Begin("Camera", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("POSITION");
 		ImGui::SliderFloat("Radius", &r, 0.1f, 100.0f, "%.3f");
@@ -38,7 +38,7 @@ void Camera::SpawnControlWindow() noexcept
 
 void Camera::Reset()
 {
-	r = 1.0f;
+	r = 30.0f;
 	theta = phi = roll = pitch = yaw = 0.0f;
 	near_plane = 0.5f;
 	far_plane = 5.0f;

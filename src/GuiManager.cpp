@@ -3,7 +3,7 @@
 
 GuiManager::GuiManager()
 {
-	IMGUI_CHECKVERSION();
+	//IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
 	ImGui::StyleColorsDark();
 	SetCustomTheme();
@@ -92,4 +92,5 @@ void GuiManager::SetCustomTheme()
 	ImGuiIO& io = ImGui::GetIO();
 	float size_pixels = 17.0f;
 	io.Fonts->AddFontFromFileTTF("./assets/fonts/ubuntu/ubuntu-regular.ttf", size_pixels);
+	io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 }

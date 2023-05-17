@@ -19,9 +19,9 @@ void PointLight::SpawnControlWindow() noexcept
 		ImGui::ColorEdit3("Ambient Color", &plBuf.ambient_color.x);
 
 		ImGui::Text("Phong Parameters");
-		ImGui::SliderFloat("Constant", &plBuf.att_const, 0.05f, 10.0f, "%.2f", 4);
-		ImGui::SliderFloat("Linear", &plBuf.att_lin, 0.0001f, 4.0f, "%.4f", 8);
-		ImGui::SliderFloat("Quadratic", &plBuf.att_quad, 0.0000001f, 10.0f, "%.7f", 10);
+		ImGui::SliderFloat("Constant", &plBuf.att_const, 0.05f, 10.0f, "%.2f");
+		ImGui::SliderFloat("Linear", &plBuf.att_lin, 0.0001f, 4.0f, "%.4f");
+		ImGui::SliderFloat("Quadratic", &plBuf.att_quad, 0.0000001f, 10.0f, "%.7f");
 
 		if (ImGui::Button("Reset"))
 		{

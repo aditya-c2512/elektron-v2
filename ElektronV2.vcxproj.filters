@@ -132,6 +132,9 @@
     <ClCompile Include="imgui\imgui_widgets.cpp">
       <Filter>ImGUI</Filter>
     </ClCompile>
+    <ClCompile Include="imgui\imgui_tables.cpp">
+      <Filter>ImGUI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ElekWin.h">
