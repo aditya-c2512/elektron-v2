@@ -28,18 +28,5 @@ private:
 	PointLight pointLight;
 
 	ModelGraph modelGraph;
-
-	struct
-	{
-		float roll = 0.0f;
-		float pitch = 0.0f;
-		float yaw = 0.0f;
-		float x = 0.0f;
-		float y = 0.0f;
-		float z = 0.0f;
-	} pos;
-
-	/*std::vector<std::unique_ptr<Drawable>> drawables;
-	static constexpr size_t nDrawables = 1;*/
 };
 
