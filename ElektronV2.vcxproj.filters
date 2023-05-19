@@ -305,5 +305,8 @@
     <FxCompile Include="shaders\VS_Solid.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="shaders\PS_Phong_NoSpecular.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

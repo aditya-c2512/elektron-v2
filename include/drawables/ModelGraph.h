@@ -43,7 +43,7 @@ public:
 	void Draw(ElektronGFX& gfx) const;
 	void SpawnModelGraphControlWindow() noexcept;
 private:
-	static std::unique_ptr<Mesh> ParseMesh(ElektronGFX& gfx, const aiMesh& mesh);
+	static std::unique_ptr<Mesh> ParseMesh(ElektronGFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
 	std::unique_ptr<Node> ParseNode(const aiNode& node);
 private:
 	std::string name;

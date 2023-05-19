@@ -1,6 +1,6 @@
 #include "../include/bindables/Texture.h"
 
-Texture::Texture(ElektronGFX& gfx, std::string& texturePath)
+Texture::Texture(ElektronGFX& gfx, std::string& texturePath, unsigned int slot) : slot(slot)
 {
 	texture = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 4);
 
@@ -33,5 +33,5 @@ Texture::Texture(ElektronGFX& gfx, std::string& texturePath)
 
 void Texture::Bind(ElektronGFX& gfx) noexcept
 {
-	GetContext(gfx)->PSSetShaderResources(0, 1, pTextureView.GetAddressOf());
+	GetContext(gfx)->PSSetShaderResources(slot, 1, pTextureView.GetAddressOf());
 }

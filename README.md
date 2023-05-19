@@ -13,8 +13,8 @@
 - [x] Dear ImGui Integration
 - [x] Lights and Shading
 - [x] Model Scene Graph
-- [ ] Material Loading
-- [ ] Dear ImGUI Docking and Viewport => Update Dear ImGUI version
+- [x] Material Loading
+- [x] Dear ImGUI Docking => Update Dear ImGUI version
 - [ ] Multiple Lights Shading and UI support
 - [ ] HDRI Skybox
 - [ ] Shadow Mapping
