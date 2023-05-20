@@ -34,7 +34,7 @@ float4 main(float3 cameraPos : Position, float3 n : Normal, float2 texCoords : T
     const float3 r = w * 2.0f - vl;
     
     const float3 specular = (diffuse_color * intensity_diffuse) * att * intensity_specular * pow(max(0.0f, dot(normalize(-r), normalize(cameraPos))), power_specular);
-	
-    return float4(saturate((diffuse + ambient_color) * albedoMap.Sample(splr, texCoords).rgb + specular), 1.0f);
+    const float4 final = float4(saturate((diffuse + ambient_color) * albedoMap.Sample(splr, texCoords).rgb + specular), 1.0f);
+    return final;
 
 }

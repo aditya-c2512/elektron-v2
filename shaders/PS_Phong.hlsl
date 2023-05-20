@@ -31,6 +31,6 @@ float4 main(float3 cameraPos : Position, float3 n : Normal, float2 texCoords : T
     const float specularColorPower = pow(2.0f, specularMapSample.a * 13.0f);
     const float3 specular = att * specularColorIntensity * pow(max(0.0f, dot(normalize(-r), normalize(cameraPos))), specularColorPower);
     
-    return float4(saturate((diffuse + ambient_color) * albedoMap.Sample(splr, texCoords).rgb + specular), 1.0f);
+    return float4(saturate((diffuse + ambient_color) * albedoMap.Sample(splr, texCoords).rgb + specular*10.0f), 1.0f);
 
 }

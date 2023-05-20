@@ -5,7 +5,7 @@
 
 ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080), 
 							wnd(1920,1080,L"Elektron Engine V2.0"), pointLight(wnd.GetGfx()),
-							modelGraph(wnd.GetGfx(), "C:/Projects/elektron-v2/assets/models/nanosuit/nanosuit.obj")
+							modelGraph(wnd.GetGfx(), "C:/Projects/elektron-v2/assets/models/helmet/helmet.obj")
 {
 	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height/width, 0.5f, 50.0f));
 }

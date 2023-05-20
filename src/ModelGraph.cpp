@@ -138,12 +138,15 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 
+	float minX = 3, minY = 3;
 	for (unsigned int vIdx = 0; vIdx < mesh.mNumVertices; vIdx++)
 	{
 		aiVector3D aiVertex = mesh.mVertices[vIdx];
 		aiVector3D aiNorm = mesh.mNormals[vIdx];
 		aiVector3D aiTexCoord = mesh.mTextureCoords[0][vIdx];
 
+		minX = aiTexCoord.x < minX ? aiTexCoord.x : minX;
+		minY = aiTexCoord.y < minY ? aiTexCoord.y : minY;
 		Vertex vert;
 		vert.pos.x = aiVertex.x;
 		vert.pos.y = aiVertex.y;
@@ -158,6 +161,7 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 
 		vertices.push_back(vert);
 	}
+
 	for (unsigned int fIdx = 0; fIdx < mesh.mNumFaces; fIdx++)
 	{
 		aiFace face = mesh.mFaces[fIdx];
@@ -172,9 +176,10 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 
 	bindablePtrs.push_back(std::make_unique<IndexBuffer>(gfx, indices));
 
+	// TO-DO: Get embedded textures from fbx and glTF
+	// TO-DO: Expand Shader system to use PBR Materials
 	using namespace std::string_literals;
-	const auto basepath = "C:/Projects/elektron-v2/assets/models/nanosuit/"s;
-
+	const auto basepath = "C:/Projects/elektron-v2/assets/models/helmet/"s;
 	bool hasSpecularMap = false;
 	float shininess = 35.0f;
 	if (mesh.mMaterialIndex >= 0)
@@ -190,6 +195,8 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 		aiString specFilename;
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &specFilename) == aiReturn_SUCCESS)
 		{
+			OutputDebugStringA(specFilename.C_Str());
+			OutputDebugStringA("\n");
 			std::string spec_filepath = basepath + specFilename.C_Str();
 			bindablePtrs.push_back(std::make_unique<Texture>(gfx, spec_filepath, 1));
 			hasSpecularMap = true;
@@ -201,12 +208,6 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 		
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}
-
-	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Phong.cso");
-	auto pvsbc = pvs->GetBytecode();
-	bindablePtrs.push_back(std::move(pvs));
-
-	bindablePtrs.push_back(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
 	if (hasSpecularMap)
 	{
@@ -225,6 +226,12 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 		materialBuff.power_specular = shininess;
 		bindablePtrs.push_back(std::make_unique<PixelConstantBuffer<PSMaterialBuffer>>(gfx, materialBuff, 1));
 	}
+
+	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Phong.cso");
+	auto pvsbc = pvs->GetBytecode();
+	bindablePtrs.push_back(std::move(pvs));
+
+	bindablePtrs.push_back(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
 	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs), mesh.mName.C_Str());
 }

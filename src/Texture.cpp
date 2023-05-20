@@ -2,7 +2,10 @@
 
 Texture::Texture(ElektronGFX& gfx, std::string& texturePath, unsigned int slot) : slot(slot)
 {
+	//stbi_set_flip_vertically_on_load(true);
 	texture = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 4);
+
+	assert(numChannels == 4);
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = width;
