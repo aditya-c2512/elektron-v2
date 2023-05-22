@@ -135,6 +135,9 @@
     <ClCompile Include="imgui\imgui_tables.cpp">
       <Filter>ImGUI</Filter>
     </ClCompile>
+    <ClCompile Include="src\SkySphere.cpp">
+      <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ElekWin.h">
@@ -275,6 +278,9 @@
     <ClInclude Include="imgui\imstb_truetype.h">
       <Filter>ImGUI</Filter>
     </ClInclude>
+    <ClInclude Include="include\drawables\SkySphere.h">
+      <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ElektronV2.rc">
@@ -306,6 +312,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="shaders\PS_Phong_NoSpecular.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="shaders\PS_Environment.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

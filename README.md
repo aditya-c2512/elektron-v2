@@ -17,6 +17,6 @@
 - [x] Dear ImGUI Docking => Update Dear ImGUI version
 - [ ] Multiple Lights Shading and UI support
 - [ ] PBR Materials and GGX Shading
-- [ ] HDRI Skybox
+- [x] HDRI Skybox
 - [ ] Shadow Mapping
 - [ ] Voxel Cone Tracing Global Illumination (VXGI)

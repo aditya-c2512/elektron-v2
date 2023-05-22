@@ -39,6 +39,14 @@ private:
 class ModelGraph
 {
 public:
+	enum class ELEKTRON_MODEL_FORMAT
+	{
+		ELEKTRON_MODEL_WAVEFRONT,
+		ELEKTRON_MODEL_GLTF,
+		ELEKTRON_MODEL_GLTF_EMBEDDED,
+		ELEKTRON_MODEL_FBX
+	};
+public:
 	ModelGraph(ElektronGFX& gfx, const std::string fileName);
 	void Draw(ElektronGFX& gfx) const;
 	void SpawnModelGraphControlWindow() noexcept;

@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "PointLight.h"
 #include "drawables/ModelGraph.h"
+#include "drawables/SkySphere.h"
 
 class ElektronApp
 {
@@ -28,5 +29,6 @@ private:
 	PointLight pointLight;
 
 	ModelGraph modelGraph;
+	SkySphere skySphere;
 };
 
