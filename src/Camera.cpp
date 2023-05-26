@@ -27,7 +27,7 @@ void Camera::SpawnControlWindow() noexcept
 		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 		ImGui::Text("PROJECTION PLANES");
 		ImGui::SliderFloat("Near Plane", &near_plane, 0.01f, 10.0f,"%.3f");
-		ImGui::SliderFloat("Far Plane", &far_plane, 0.01f, 100.0f);
+		ImGui::SliderFloat("Far Plane", &far_plane, 0.01f, 1000.0f);
 		if (ImGui::Button("RESET"))
 		{
 			Reset();
@@ -41,5 +41,5 @@ void Camera::Reset()
 	r = 30.0f;
 	theta = phi = roll = pitch = yaw = 0.0f;
 	near_plane = 0.5f;
-	far_plane = 5.0f;
+	far_plane = 500.0f;
 }

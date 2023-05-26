@@ -179,7 +179,7 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 	// TO-DO: Get embedded textures from fbx and glTF
 	// TO-DO: Expand Shader system to use PBR Materials
 	using namespace std::string_literals;
-	const auto basepath = "C:/Projects/elektron-v2/assets/models/helmet/"s;
+	const auto basepath = "C:/Projects/elektron-v2/assets/models/nanosuit/"s;
 	bool hasSpecularMap = false;
 	float shininess = 35.0f;
 	if (mesh.mMaterialIndex >= 0)
@@ -205,10 +205,13 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 		{
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
+
+		std::string skyMapPath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
+		bindablePtrs.push_back(std::make_unique<Texture>(gfx, skyMapPath, 2));
 		
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}
-
+	hasSpecularMap = true;
 	if (hasSpecularMap)
 	{
 		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Phong.cso"));

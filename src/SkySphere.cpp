@@ -78,7 +78,7 @@ SkySphere::SkySphere(ElektronGFX& gfx)
 
         AddStaticBind(std::make_unique<PixelShader>(gfx, L"PS_Environment.cso"));
 
-        std::string texturePath = "C:/Projects/elektron-v2/assets/models/skymap_8k.png";
+        std::string texturePath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
         AddStaticBind(std::make_unique<Texture>(gfx, texturePath));
         AddStaticBind(std::make_unique<Sampler>(gfx));
 
@@ -94,7 +94,7 @@ SkySphere::SkySphere(ElektronGFX& gfx)
     }
     AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
-    dx::XMStoreFloat3x3(&modelTransform, dx::XMMatrixScaling(50.0f, 50.0f, 50.0f));
+    dx::XMStoreFloat3x3(&modelTransform, dx::XMMatrixScaling(100.0f, 100.0f, 100.0f));
 }
 
 void SkySphere::Update(float dt) noexcept
