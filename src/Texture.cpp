@@ -1,8 +1,11 @@
 #include "../include/bindables/Texture.h"
 
-Texture::Texture(ElektronGFX& gfx, std::string& texturePath)
+Texture::Texture(ElektronGFX& gfx, std::string& texturePath, unsigned int slot) : slot(slot)
 {
+	//stbi_set_flip_vertically_on_load(true);
 	texture = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 4);
+
+	//assert(numChannels == 4);
 
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = width;
@@ -33,5 +36,5 @@ Texture::Texture(ElektronGFX& gfx, std::string& texturePath)
 
 void Texture::Bind(ElektronGFX& gfx) noexcept
 {
-	GetContext(gfx)->PSSetShaderResources(0, 1, pTextureView.GetAddressOf());
+	GetContext(gfx)->PSSetShaderResources(slot, 1, pTextureView.GetAddressOf());
 }

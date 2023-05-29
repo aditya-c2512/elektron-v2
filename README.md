@@ -11,7 +11,16 @@
 ## FUTURE WORK
 - [x] Camera system
 - [x] Dear ImGui Integration
-- [ ] Lights and Shading
-- [ ] Multiple Mesh Loading from single file
-- [ ] Material Loading
+- [x] Lights and Shading
+- [x] Model Scene Graph
+- [x] Material Loading
+- [x] Dear ImGUI Docking => Update Dear ImGUI version
+- [x] HDRI Skybox
+- [x] Shift to GGX Shading
+- [ ] PBR Materials
+- [ ] Implement Cubemap Reflections
+- [ ] Shift Texture Loading to DirectXTex
+- [ ] Optimise Texture Loading System
+- [ ] Multiple Lights Shading and UI support
+- [ ] Shadow Mapping
 - [ ] Voxel Cone Tracing Global Illumination (VXGI)

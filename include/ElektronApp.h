@@ -5,6 +5,7 @@
 #include "Camera.h"
 #include "PointLight.h"
 #include "drawables/ModelGraph.h"
+#include "drawables/SkySphere.h"
 
 class ElektronApp
 {
@@ -13,7 +14,9 @@ public:
 	int Run();
 private:
 	void RunFrame();
+	double GetCPUDiagnostics();
 	void SpawnModelControlWindow();
+	void SpawnViewportWindow();
 private:
 	float width, height;
 
@@ -27,18 +30,13 @@ private:
 	PointLight pointLight;
 
 	ModelGraph modelGraph;
+	SkySphere skySphere;
 
-	struct
-	{
-		float roll = -90.0f;
-		float pitch = 0.0f;
-		float yaw = 0.0f;
-		float x = 0.0f;
-		float y = 0.0f;
-		float z = 0.0f;
-	} pos;
+	MEMORYSTATUSEX memInfo;
+	double ram_usage;
 
-	/*std::vector<std::unique_ptr<Drawable>> drawables;
-	static constexpr size_t nDrawables = 1;*/
+	/*static ULARGE_INTEGER lastCPU, lastSysCPU, lastUserCPU;
+	static int numProcessors;
+	static HANDLE self;*/
 };
 

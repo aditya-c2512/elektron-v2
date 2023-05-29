@@ -3,7 +3,7 @@
 #include "../include/bindables/Texture.h"
 #include "../include/bindables/Sampler.h"
 
-Mesh::Mesh(ElektronGFX& gfx, std::vector<std::unique_ptr<Bindable>> bindPtrs)
+Mesh::Mesh(ElektronGFX& gfx, std::vector<std::unique_ptr<Bindable>> bindPtrs, std::string name) : name(name)
 {
 	if (!isStaticInitialized())
 	{
@@ -41,7 +41,12 @@ DirectX::XMMATRIX Mesh::GetTransform() const noexcept
 	return DirectX::XMLoadFloat4x4(&transform);
 }
 
-Node::Node(std::vector<Mesh*> meshPtrs, const DirectX::XMMATRIX& transform) noexcept : meshPtrs(std::move(meshPtrs))
+std::string Mesh::GetName() const noexcept
+{
+	return name;
+}
+
+Node::Node(std::string name, std::vector<Mesh*> meshPtrs, const DirectX::XMMATRIX& transform) noexcept : name(name), meshPtrs(std::move(meshPtrs))
 {
 	DirectX::XMStoreFloat4x4(&this->transform, transform);
 }
@@ -59,6 +64,24 @@ void Node::Draw(ElektronGFX& gfx, DirectX::FXMMATRIX accumulatedTransform) const
 	}
 }
 
+void Node::RenderNodeTree() noexcept
+{
+	if (childPtrs.empty())
+	{
+		ImGui::TreeNodeEx(name.c_str(), ImGuiTreeNodeFlags_Leaf);
+		ImGui::TreePop();
+		return;
+	}
+	if (ImGui::TreeNode(name.c_str()))
+	{
+		for (const auto& pc : childPtrs)
+		{
+			pc->RenderNodeTree();
+		}
+		ImGui::TreePop();
+	}
+}
+
 void Node::AddChild(std::unique_ptr<Node> pChild) noexcept
 {
 	assert(pChild);
@@ -70,34 +93,60 @@ ModelGraph::ModelGraph(ElektronGFX& gfx, const std::string fileName)
 	Assimp::Importer imp;
 	const auto pScene = imp.ReadFile(fileName.c_str(),
 		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices
+		aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_GenNormals
 	);
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
-		meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i]));
+		meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
 	}
 
 	pRoot = ParseNode(*pScene->mRootNode);
 }
 
-void ModelGraph::Draw(ElektronGFX& gfx, DirectX::FXMMATRIX transform) const
+void ModelGraph::Draw(ElektronGFX& gfx) const
 {
+	const auto transform = dx::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) * dx::XMMatrixTranslation(pos.x, pos.y, pos.z);
 	pRoot->Draw(gfx, transform);
 }
 
-std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh)
+void ModelGraph::SpawnModelGraphControlWindow() noexcept
+{
+	if (ImGui::Begin("Model", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
+	{
+		ImGui::Columns(2, nullptr, true);
+		pRoot->RenderNodeTree();
+
+		ImGui::NextColumn();
+		ImGui::Text("POSITION");
+		ImGui::DragFloat3("World Space", &pos.x, 0.001f, -1000.0f, 1000.0f, "%.1f");
+		ImGui::Text("ROTATION");
+		ImGui::SliderAngle("Roll", &pos.roll, -180.0f, 180.0f, "%.1f");
+		ImGui::SliderAngle("Pitch", &pos.pitch, -180.0f, 180.0f, "%.1f");
+		ImGui::SliderAngle("Yaw", &pos.yaw, -180.0f, 180.0f, "%.1f");
+		if (ImGui::Button("RESET"))
+		{
+			pos.x = pos.y = pos.z = 0.0f;
+			pos.roll = pos.pitch = pos.yaw = 0.0f;
+		}
+	}
+	ImGui::End();
+}
+
+std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
 
+	float minX = 3, minY = 3;
 	for (unsigned int vIdx = 0; vIdx < mesh.mNumVertices; vIdx++)
 	{
 		aiVector3D aiVertex = mesh.mVertices[vIdx];
 		aiVector3D aiNorm = mesh.mNormals[vIdx];
-
 		aiVector3D aiTexCoord = mesh.mTextureCoords[0][vIdx];
 
+		minX = aiTexCoord.x < minX ? aiTexCoord.x : minX;
+		minY = aiTexCoord.y < minY ? aiTexCoord.y : minY;
 		Vertex vert;
 		vert.pos.x = aiVertex.x;
 		vert.pos.y = aiVertex.y;
@@ -108,10 +157,11 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 		vert.n.z = aiNorm.z;
 
 		vert.texCoords.x = aiTexCoord.x;
-		vert.texCoords.y = aiTexCoord.x;
+		vert.texCoords.y = aiTexCoord.y;
 
 		vertices.push_back(vert);
 	}
+
 	for (unsigned int fIdx = 0; fIdx < mesh.mNumFaces; fIdx++)
 	{
 		aiFace face = mesh.mFaces[fIdx];
@@ -126,29 +176,67 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 
 	bindablePtrs.push_back(std::make_unique<IndexBuffer>(gfx, indices));
 
+	// TO-DO: Get embedded textures from fbx and glTF
+	// TO-DO: Expand Shader system to use PBR Materials
+	using namespace std::string_literals;
+	const auto basepath = "C:/Projects/elektron-v2/assets/models/nanosuit/"s;
+	bool hasSpecularMap = false;
+	float shininess = 35.0f;
+	if (mesh.mMaterialIndex >= 0)
+	{
+		using namespace std::string_literals;
+		auto& material = *pMaterials[mesh.mMaterialIndex];
+
+		aiString diffFilename;
+		material.GetTexture(aiTextureType_DIFFUSE, 0, &diffFilename);
+		std::string diff_filepath = basepath + diffFilename.C_Str();
+		bindablePtrs.push_back(std::make_unique<Texture>(gfx, diff_filepath));
+
+		aiString specFilename;
+		if (material.GetTexture(aiTextureType_SPECULAR, 0, &specFilename) == aiReturn_SUCCESS)
+		{
+			OutputDebugStringA(specFilename.C_Str());
+			OutputDebugStringA("\n");
+			std::string spec_filepath = basepath + specFilename.C_Str();
+			bindablePtrs.push_back(std::make_unique<Texture>(gfx, spec_filepath, 1));
+			hasSpecularMap = true;
+		}
+		else
+		{
+			material.Get(AI_MATKEY_SHININESS, shininess);
+		}
+
+		/*std::string skyMapPath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
+		bindablePtrs.push_back(std::make_unique<Texture>(gfx, skyMapPath, 2));*/
+		
+		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
+	}
+
+	if (hasSpecularMap)
+	{
+		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_GGX.cso"));
+	}
+	else
+	{
+		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Phong_NoSpecular.cso"));
+
+		struct PSMaterialBuffer
+		{
+			float intensity_specular = 1.6f;
+			float power_specular;
+			float padding[2];
+		} materialBuff;
+		materialBuff.power_specular = shininess;
+		bindablePtrs.push_back(std::make_unique<PixelConstantBuffer<PSMaterialBuffer>>(gfx, materialBuff, 1));
+	}
+
 	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Phong.cso");
 	auto pvsbc = pvs->GetBytecode();
 	bindablePtrs.push_back(std::move(pvs));
 
-	bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Phong.cso"));
-
 	bindablePtrs.push_back(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
-	std::string texturePath = "C:/Projects/elektron-v2/assets/models/nanosuit/NanoSuit_us.png";
-	bindablePtrs.push_back(std::make_unique<Texture>(gfx, texturePath));
-	bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
-
-	struct PSMaterialBuffer
-	{
-		float intensity_specular;
-		float power_specular;
-		float padding[2];
-	} materialBuff;
-	materialBuff.intensity_specular = 1.0f;
-	materialBuff.power_specular = 35.0f;
-	bindablePtrs.push_back(std::make_unique<PixelConstantBuffer<PSMaterialBuffer>>(gfx, materialBuff, 1));
-
-	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
+	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs), mesh.mName.C_Str());
 }
 
 std::unique_ptr<Node> ModelGraph::ParseNode(const aiNode& node)
@@ -166,7 +254,7 @@ std::unique_ptr<Node> ModelGraph::ParseNode(const aiNode& node)
 		curMeshPtrs.push_back(meshPtrs.at(meshIdx).get());
 	}
 
-	auto pNode = std::make_unique<Node>(std::move(curMeshPtrs), transform);
+	auto pNode = std::make_unique<Node>(node.mName.C_Str(), std::move(curMeshPtrs), transform);
 	for (size_t i = 0; i < node.mNumChildren; i++)
 	{
 		pNode->AddChild(ParseNode(*node.mChildren[i]));

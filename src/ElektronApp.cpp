@@ -3,21 +3,54 @@
 
 #include "../imgui/imgui.h"
 
+#include "windows.h"
+
 ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080), 
 							wnd(1920,1080,L"Elektron Engine V2.0"), pointLight(wnd.GetGfx()),
-							modelGraph(wnd.GetGfx(), "C:/Projects/elektron-v2/assets/models/nanosuit/Nanosuit.obj")
+							modelGraph(wnd.GetGfx(), "C:/Projects/elektron-v2/assets/models/nanosuit/nanosuit.obj"),
+							skySphere(wnd.GetGfx())
 {
-	/*drawables.reserve(nDrawables);
+	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height/width, 0.5f, 500.0f));
 
-	for (auto i = 0; i < nDrawables; i++)
-	{
-		drawables.push_back(std::make_unique<Model>(
-			wnd.GetGfx(), "C:/Projects/elektron-v2/assets/models/bunny.obj"
-			)
-		);
-	}*/
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	GlobalMemoryStatusEx(&memInfo);
 
-	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height/width, 0.5f, 5.0f));
+	//SYSTEM_INFO sysInfo;
+	//FILETIME ftime, fsys, fuser;
+
+	//GetSystemInfo(&sysInfo);
+	//numProcessors = sysInfo.dwNumberOfProcessors;
+
+	//GetSystemTimeAsFileTime(&ftime);
+	//memcpy(&lastCPU, &ftime, sizeof(FILETIME));
+
+	//self = GetCurrentProcess();
+	//GetProcessTimes(self, &ftime, &ftime, &fsys, &fuser);
+	//memcpy(&lastSysCPU, &fsys, sizeof(FILETIME));
+	//memcpy(&lastUserCPU, &fuser, sizeof(FILETIME));
+}
+
+double ElektronApp::GetCPUDiagnostics() 
+{
+	/*FILETIME ftime, fsys, fuser;
+	ULARGE_INTEGER now, sys, user;
+	double percent;
+
+	GetSystemTimeAsFileTime(&ftime);
+	memcpy(&now, &ftime, sizeof(FILETIME));
+
+	GetProcessTimes(self, &ftime, &ftime, &fsys, &fuser);
+	memcpy(&sys, &fsys, sizeof(FILETIME));
+	memcpy(&user, &fuser, sizeof(FILETIME));
+	percent = (sys.QuadPart - lastSysCPU.QuadPart) +
+		(user.QuadPart - lastUserCPU.QuadPart);
+	percent /= (now.QuadPart - lastCPU.QuadPart);
+	percent /= numProcessors;
+	lastCPU = now;
+	lastUserCPU = user;
+	lastSysCPU = sys;*/
+
+	return 100;
 }
 
 int ElektronApp::Run()
@@ -35,6 +68,7 @@ int ElektronApp::Run()
 void ElektronApp::RunFrame()
 {
 	dt = ImGui::GetIO().DeltaTime * speed_factor;
+	ram_usage = (memInfo.ullTotalPhys - memInfo.ullAvailPhys)/pow(10,9);
 
 	wnd.GetGfx().BeginFrame(0.129f, 0.148f, 0.179f);
 
@@ -42,27 +76,20 @@ void ElektronApp::RunFrame()
 
 	pointLight.Bind(wnd.GetGfx(), cam.GetMatrix());
 
-	/*for (auto& drawable : drawables)
-	{
-		drawable->Update(dt);
-		drawable->Draw(wnd.GetGfx());
-		drawable->SpawnControlWindow();
-	}*/
-
-	const auto transform = dx::XMMatrixRotationRollPitchYaw(pos.roll, pos.pitch, pos.yaw) * dx::XMMatrixTranslation(pos.x, pos.y, pos.z);
-	modelGraph.Draw(wnd.GetGfx(), transform);
-
+	skySphere.Draw(wnd.GetGfx());
+	modelGraph.Draw(wnd.GetGfx());
 	pointLight.Draw(wnd.GetGfx());
 
-	SpawnModelControlWindow();
-
-	if (ImGui::Begin("Demo Simulation Speed", NULL, ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize))
+	if (ImGui::Begin("Engine Diagnostics", NULL, ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize))
 	{
-		ImGui::SliderFloat("Delta Time", &speed_factor, 0.0f, 100.0f);
 		ImGui::Text("Application Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		ImGui::Text("CPU Usage : %.1f %%", GetCPUDiagnostics());
+		ImGui::Text("RAM Usage : %.2f GB", ram_usage);
 	}
 	ImGui::End();
 
+	modelGraph.SpawnModelGraphControlWindow();
+	//SpawnViewportWindow(); // TO-DO: Separate viewport window for rendering.
 	cam.SpawnControlWindow();
 	pointLight.SpawnControlWindow();
 
@@ -71,21 +98,20 @@ void ElektronApp::RunFrame()
 	wnd.GetGfx().PresentFrame();
 }
 
-void ElektronApp::SpawnModelControlWindow()
+void ElektronApp::SpawnViewportWindow()
 {
-	if (ImGui::Begin("Model", NULL, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize))
-	{
-		ImGui::Text("POSITION");
-		ImGui::DragFloat3("World Space", &pos.x, 0.001f, -1000.0f, 1000.0f, "%.3f");
-		ImGui::Text("ROTATION");
-		ImGui::SliderAngle("Roll", &pos.roll, -180.0f, 180.0f, "%.1f");
-		ImGui::SliderAngle("Pitch", &pos.pitch, -180.0f, 180.0f, "%.1f");
-		ImGui::SliderAngle("Yaw", &pos.yaw, -180.0f, 180.0f, "%.1f");
-		if (ImGui::Button("RESET"))
-		{
-			pos.x = pos.y = pos.z = 0.0f;
-			pos.roll = pos.pitch = pos.yaw = 0.0f;
-		}
-	}
+	ImGui::Begin("Viewport");
+
+	// Get the position and size of the viewport window
+	ImVec2 pos = ImGui::GetCursorScreenPos();
+	ImVec2 size = ImGui::GetContentRegionAvail();
+
+	// Draw a frame around the viewport
+	ImGui::GetWindowDrawList()->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32(255, 255, 255, 255));
+
+	// Render your frames within the viewport
+	//ImGui::Image((void*)wnd.GetGfx().GetRTV().Get(), ImVec2(width, height), ImVec2(0, 1), ImVec2(1, 0));
+
 	ImGui::End();
+
 }

@@ -2,6 +2,8 @@
 #include "../resource.h"
 #include <sstream>
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 Window::WindowClass Window::WindowClass::wndClass;
 
 Window::WindowClass::WindowClass() noexcept : hInstance(GetModuleHandle(nullptr))
@@ -42,9 +44,9 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept
 Window::Window(int width, int height, LPCWSTR name) : width(width), height(height)
 {
 	RECT rc;
-	rc.left = 0;
+	rc.left = 10;
 	rc.right = rc.left + width;
-	rc.top = 0;
+	rc.top = 10;
 	rc.bottom = rc.top + height;
 
 	if ((AdjustWindowRect(&rc, WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU, FALSE)) == 0)

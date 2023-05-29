@@ -65,7 +65,6 @@ ElektronGFX::ElektronGFX(HWND hWnd, int width, int height) : width(width), heigh
 
 	pDeviceContext->OMSetDepthStencilState(pDepthStencilState.Get(), 1u);
 
-	wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
 	D3D11_TEXTURE2D_DESC pDSTexState = {};
 	pDSTexState.Width = width;
 	pDSTexState.Height = height;
