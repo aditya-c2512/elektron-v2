@@ -206,15 +206,15 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
 
-		std::string skyMapPath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
-		bindablePtrs.push_back(std::make_unique<Texture>(gfx, skyMapPath, 2));
+		/*std::string skyMapPath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
+		bindablePtrs.push_back(std::make_unique<Texture>(gfx, skyMapPath, 2));*/
 		
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}
-	hasSpecularMap = true;
+
 	if (hasSpecularMap)
 	{
-		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Phong.cso"));
+		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_GGX.cso"));
 	}
 	else
 	{

@@ -317,5 +317,8 @@
     <FxCompile Include="shaders\PS_Environment.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+    <FxCompile Include="shaders\PS_GGX.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

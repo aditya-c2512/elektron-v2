@@ -14,6 +14,7 @@ public:
 	int Run();
 private:
 	void RunFrame();
+	double GetCPUDiagnostics();
 	void SpawnModelControlWindow();
 	void SpawnViewportWindow();
 private:
@@ -30,5 +31,12 @@ private:
 
 	ModelGraph modelGraph;
 	SkySphere skySphere;
+
+	MEMORYSTATUSEX memInfo;
+	double ram_usage;
+
+	/*static ULARGE_INTEGER lastCPU, lastSysCPU, lastUserCPU;
+	static int numProcessors;
+	static HANDLE self;*/
 };
 

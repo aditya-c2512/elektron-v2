@@ -9,6 +9,8 @@ cbuffer LightBuffer
     float att_quad;
 };
 
+static const float PI = 3.14159f;
+
 Texture2D albedoMap;
 Texture2D specularMap;
 Texture2D skyMap : register(t2); // Testing direct equirectangular map sampling for IBL. Switch to TextureCube

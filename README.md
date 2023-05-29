@@ -16,10 +16,11 @@
 - [x] Material Loading
 - [x] Dear ImGUI Docking => Update Dear ImGUI version
 - [x] HDRI Skybox
+- [x] Shift to GGX Shading
+- [ ] PBR Materials
 - [ ] Implement Cubemap Reflections
 - [ ] Shift Texture Loading to DirectXTex
 - [ ] Optimise Texture Loading System
 - [ ] Multiple Lights Shading and UI support
-- [ ] PBR Materials and GGX Shading
 - [ ] Shadow Mapping
 - [ ] Voxel Cone Tracing Global Illumination (VXGI)
