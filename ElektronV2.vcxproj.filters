@@ -34,6 +34,9 @@
     <Filter Include="ImGUI">
       <UniqueIdentifier>{378cb2b0-c6f9-412f-b488-92d86eb424ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DirectXTex">
+      <UniqueIdentifier>{e6f80407-d14e-49c3-8b1c-c973f40d48d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Main.cpp">
@@ -137,6 +140,9 @@
     </ClCompile>
     <ClCompile Include="src\SkySphere.cpp">
       <Filter>Source Files\Drawable</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ElekTexMap.cpp">
+      <Filter>Source Files\Bindable</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -281,6 +287,33 @@
     <ClInclude Include="include\drawables\SkySphere.h">
       <Filter>Header Files\Drawable</Filter>
     </ClInclude>
+    <ClInclude Include="DirectXTex\BC.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\BCDirectCompute.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\d3dx12.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\DDS.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\DirectXTex.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\DirectXTexP.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\filters.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTex\scoped.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bindables\ElekTexMap.h">
+      <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ElektronV2.rc">
@@ -320,5 +353,10 @@
     <FxCompile Include="shaders\PS_GGX.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectXTex\DirectXTex.inl">
+      <Filter>DirectXTex</Filter>
+    </None>
   </ItemGroup>
 </Project>

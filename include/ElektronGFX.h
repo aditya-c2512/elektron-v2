@@ -15,6 +15,7 @@ class ElektronGFX
 {
 	friend class Bindable;
 	friend class PointLight;
+	friend class ElekTexMap;
 public :
 	ElektronGFX(HWND hWnd, int width, int height);
 	ElektronGFX(const ElektronGFX&) = delete;

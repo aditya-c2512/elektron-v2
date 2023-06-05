@@ -6,6 +6,7 @@
 #include "PointLight.h"
 #include "drawables/ModelGraph.h"
 #include "drawables/SkySphere.h"
+#include "bindables/ElekTexMap.h"
 
 class ElektronApp
 {
@@ -15,7 +16,6 @@ public:
 private:
 	void RunFrame();
 	double GetCPUDiagnostics();
-	void SpawnModelControlWindow();
 	void SpawnViewportWindow();
 private:
 	float width, height;
@@ -28,7 +28,7 @@ private:
 
 	Camera cam;
 	PointLight pointLight;
-
+	ElekTexMap elekTexMap;
 	ModelGraph modelGraph;
 	SkySphere skySphere;
 

@@ -1,10 +1,12 @@
 #pragma once
 #include "DrawableStatic.h"
 #include "../bindables/Bindables.h"
+#include "../bindables/ElekTexMap.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
+
 #include <string>
 
 class Mesh : public DrawableStatic<Mesh>
@@ -47,14 +49,15 @@ public:
 		ELEKTRON_MODEL_FBX
 	};
 public:
-	ModelGraph(ElektronGFX& gfx, const std::string fileName);
+	ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::string basePath, const std::string modelName, ELEKTRON_MODEL_FORMAT model_format);
 	void Draw(ElektronGFX& gfx) const;
 	void SpawnModelGraphControlWindow() noexcept;
 private:
-	static std::unique_ptr<Mesh> ParseMesh(ElektronGFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials);
+	std::unique_ptr<Mesh> ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTexMap, const aiMesh& mesh, const aiMaterial* const* pMaterials);
 	std::unique_ptr<Node> ParseNode(const aiNode& node);
 private:
 	std::string name;
+	std::string basePath;
 	std::unique_ptr<Node> pRoot;
 	std::vector<std::unique_ptr<Mesh>> meshPtrs;
 	struct

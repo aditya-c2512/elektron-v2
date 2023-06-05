@@ -132,7 +132,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>DirectXTex.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Projects\elektron-v2\assimp;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -173,6 +173,7 @@
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Drawable.cpp" />
     <ClCompile Include="src\ElekException.cpp" />
+    <ClCompile Include="src\ElekTexMap.cpp" />
     <ClCompile Include="src\ElektronApp.cpp" />
     <ClCompile Include="src\ElektronGFX.cpp" />
     <ClCompile Include="src\GuiManager.cpp" />
@@ -197,6 +198,14 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DirectXTex\BC.h" />
+    <ClInclude Include="DirectXTex\BCDirectCompute.h" />
+    <ClInclude Include="DirectXTex\d3dx12.h" />
+    <ClInclude Include="DirectXTex\DDS.h" />
+    <ClInclude Include="DirectXTex\DirectXTex.h" />
+    <ClInclude Include="DirectXTex\DirectXTexP.h" />
+    <ClInclude Include="DirectXTex\filters.h" />
+    <ClInclude Include="DirectXTex\scoped.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imgui.h" />
     <ClInclude Include="imgui\imgui_impl_dx11.h" />
@@ -208,6 +217,7 @@
     <ClInclude Include="include\bindables\Bindable.h" />
     <ClInclude Include="include\bindables\Bindables.h" />
     <ClInclude Include="include\bindables\ConstantBuffer.h" />
+    <ClInclude Include="include\bindables\ElekTexMap.h" />
     <ClInclude Include="include\bindables\IndexBuffer.h" />
     <ClInclude Include="include\bindables\InputLayout.h" />
     <ClInclude Include="include\bindables\PixelShader.h" />
@@ -324,6 +334,9 @@
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectXTex\DirectXTex.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

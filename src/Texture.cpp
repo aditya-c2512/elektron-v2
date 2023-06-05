@@ -1,18 +1,18 @@
 #include "../include/bindables/Texture.h"
+#include "../DirectXTex/DirectXTex.h"
 
 Texture::Texture(ElektronGFX& gfx, std::string& texturePath, unsigned int slot) : slot(slot)
 {
-	//stbi_set_flip_vertically_on_load(true);
-	texture = stbi_load(texturePath.c_str(), &width, &height, &numChannels, 4);
-
-	//assert(numChannels == 4);
+	std::wstring w_texture_path(texturePath.begin(), texturePath.end());
+	auto image = std::make_unique<DirectX::ScratchImage>();
+	HRESULT hr = DirectX::LoadFromWICFile(w_texture_path.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *image);
 
 	D3D11_TEXTURE2D_DESC desc = {};
-	desc.Width = width;
-	desc.Height = height;
+	desc.Width = image->GetMetadata().width;
+	desc.Height = image->GetMetadata().height;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+	desc.Format = image->GetMetadata().format;
 	desc.SampleDesc.Count = 1;
 	desc.Usage = D3D11_USAGE_DYNAMIC;
 	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
@@ -20,8 +20,8 @@ Texture::Texture(ElektronGFX& gfx, std::string& texturePath, unsigned int slot) 
 	desc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subResData = {};
-	subResData.pSysMem = texture;
-	subResData.SysMemPitch = width * numChannels;
+	subResData.pSysMem = image->GetImage(0, 0, 0)->pixels;
+	subResData.SysMemPitch = image->GetImage(0, 0, 0)->rowPitch;
 
 	GetDevice(gfx)->CreateTexture2D(&desc, &subResData, &pTexture2D);
 

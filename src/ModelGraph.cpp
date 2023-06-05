@@ -88,17 +88,17 @@ void Node::AddChild(std::unique_ptr<Node> pChild) noexcept
 	childPtrs.push_back(std::move(pChild));
 }
 
-ModelGraph::ModelGraph(ElektronGFX& gfx, const std::string fileName)
+ModelGraph::ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::string basePath, const std::string modelName, ELEKTRON_MODEL_FORMAT model_format) : basePath(basePath)
 {
 	Assimp::Importer imp;
-	const auto pScene = imp.ReadFile(fileName.c_str(),
+	const auto pScene = imp.ReadFile((basePath+modelName).c_str(),
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_GenNormals
 	);
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
-		meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
+		meshPtrs.push_back(ParseMesh(gfx, elekTexMap, *pScene->mMeshes[i], pScene->mMaterials));
 	}
 
 	pRoot = ParseNode(*pScene->mRootNode);
@@ -133,7 +133,7 @@ void ModelGraph::SpawnModelGraphControlWindow() noexcept
 	ImGui::End();
 }
 
-std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterials)
+std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTexMap, const aiMesh& mesh, const aiMaterial* const* pMaterials)
 {
 	std::vector<Vertex> vertices;
 	std::vector<unsigned int> indices;
@@ -189,15 +189,21 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 
 		aiString diffFilename;
 		material.GetTexture(aiTextureType_DIFFUSE, 0, &diffFilename);
-		std::string diff_filepath = basepath + diffFilename.C_Str();
-		bindablePtrs.push_back(std::make_unique<Texture>(gfx, diff_filepath));
+		std::string diff_filepath = basePath + diffFilename.C_Str();
+		/*std::wstring w_diff_filepath(diff_filepath.begin(), diff_filepath.end());
+		std::unique_ptr<ElekTex> pDiffTex(elekTexMap.GetTexture(gfx, w_diff_filepath, 0));
+		bindablePtrs.push_back(std::move(pDiffTex));*/
+
+		bindablePtrs.push_back(std::make_unique<Texture>(gfx, diff_filepath, 0));
 
 		aiString specFilename;
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &specFilename) == aiReturn_SUCCESS)
 		{
-			OutputDebugStringA(specFilename.C_Str());
-			OutputDebugStringA("\n");
-			std::string spec_filepath = basepath + specFilename.C_Str();
+			std::string spec_filepath = basePath + specFilename.C_Str();
+			/*std::wstring w_spec_filepath(spec_filepath.begin(), spec_filepath.end());
+			std::unique_ptr<ElekTex> pSpecTex(elekTexMap.GetTexture(gfx, w_spec_filepath, 1));
+			bindablePtrs.push_back(std::move(pSpecTex));*/
+
 			bindablePtrs.push_back(std::make_unique<Texture>(gfx, spec_filepath, 1));
 			hasSpecularMap = true;
 		}
@@ -206,9 +212,13 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, const aiMesh& mesh
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
 
-		/*std::string skyMapPath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
-		bindablePtrs.push_back(std::make_unique<Texture>(gfx, skyMapPath, 2));*/
-		
+		/*std::wstring w_skymap_filepath = L"C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
+		std::unique_ptr<ElekTex> pSkyMapTex(elekTexMap.GetTexture(gfx, w_skymap_filepath, 2));
+		bindablePtrs.push_back(std::move(pSkyMapTex));*/
+
+		std::string skymap_filepath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
+		bindablePtrs.push_back(std::make_unique<Texture>(gfx, skymap_filepath, 2));
+
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}
 
