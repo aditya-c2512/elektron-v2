@@ -78,12 +78,8 @@ SkySphere::SkySphere(ElektronGFX& gfx, ElekTexMap& elekTexMap)
 
         AddStaticBind(std::make_unique<PixelShader>(gfx, L"PS_Environment.cso"));
 
-        /*std::wstring texturePath = L"C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
-        std::unique_ptr<ElekTex> pSkyMapTex(elekTexMap.GetTexture(gfx, texturePath, 3));
-        AddStaticBind(std::move(pSkyMapTex));*/
-
         std::string texturePath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
-        AddStaticBind(std::make_unique<Texture>(gfx, texturePath, 0));
+        AddStaticBind(std::make_unique<ElekTex>(gfx, elekTexMap, texturePath, 0));
 
         AddStaticBind(std::make_unique<Sampler>(gfx));
 

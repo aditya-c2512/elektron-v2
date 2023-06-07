@@ -16,7 +16,7 @@ enum class ELEKTRON_TEXTURE_FORMAT
 class ElekTex : public Bindable
 {
 public:
-	ElekTex(ElektronGFX& gfx, std::wstring textureName, unsigned int slot = 0);
+	ElekTex(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string textureName, unsigned int slot = 0);
 	void Bind(ElektronGFX& gfx) noexcept override;
 private:
 	unsigned int slot;
@@ -28,9 +28,9 @@ class ElekTexMap
 {
 public:
 	ElekTexMap();
-	ElekTex* GetTexture(ElektronGFX& gfx, std::wstring textureName, unsigned int slot = 0);
-	void AddTexture(ElektronGFX& gfx, std::wstring textureName, unsigned int slot = 0);
+	~ElekTexMap();
+	DirectX::ScratchImage* GetScratchImage(std::string key);
 private:
-	std::unordered_map<std::wstring, std::unique_ptr<ElekTex>> textureMap;
+	std::unordered_map<std::string, DirectX::ScratchImage*> textureMap;
 };
 

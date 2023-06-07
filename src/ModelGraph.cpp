@@ -190,21 +190,15 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 		aiString diffFilename;
 		material.GetTexture(aiTextureType_DIFFUSE, 0, &diffFilename);
 		std::string diff_filepath = basePath + diffFilename.C_Str();
-		/*std::wstring w_diff_filepath(diff_filepath.begin(), diff_filepath.end());
-		std::unique_ptr<ElekTex> pDiffTex(elekTexMap.GetTexture(gfx, w_diff_filepath, 0));
-		bindablePtrs.push_back(std::move(pDiffTex));*/
-
-		bindablePtrs.push_back(std::make_unique<Texture>(gfx, diff_filepath, 0));
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, diff_filepath, 0));
 
 		aiString specFilename;
 		if (material.GetTexture(aiTextureType_SPECULAR, 0, &specFilename) == aiReturn_SUCCESS)
 		{
 			std::string spec_filepath = basePath + specFilename.C_Str();
-			/*std::wstring w_spec_filepath(spec_filepath.begin(), spec_filepath.end());
-			std::unique_ptr<ElekTex> pSpecTex(elekTexMap.GetTexture(gfx, w_spec_filepath, 1));
-			bindablePtrs.push_back(std::move(pSpecTex));*/
+			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, spec_filepath, 1));
 
-			bindablePtrs.push_back(std::make_unique<Texture>(gfx, spec_filepath, 1));
+			//bindablePtrs.push_back(std::make_unique<Texture>(gfx, spec_filepath, 1));
 			hasSpecularMap = true;
 		}
 		else
@@ -212,12 +206,9 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
 
-		/*std::wstring w_skymap_filepath = L"C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
-		std::unique_ptr<ElekTex> pSkyMapTex(elekTexMap.GetTexture(gfx, w_skymap_filepath, 2));
-		bindablePtrs.push_back(std::move(pSkyMapTex));*/
-
 		std::string skymap_filepath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
-		bindablePtrs.push_back(std::make_unique<Texture>(gfx, skymap_filepath, 2));
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, skymap_filepath, 2));
+		//bindablePtrs.push_back(std::make_unique<Texture>(gfx, skymap_filepath, 2));
 
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}
