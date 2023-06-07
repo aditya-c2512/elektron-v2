@@ -30,7 +30,7 @@ Elektron Engine is my toy rendering engine that I have been developing in order 
 - [x] HDRI Skybox
 - [x] Shift to GGX Shading
 - [x] Shift Texture Loading to DirectXTex
-- [x] ElekTexMap: Hash-map based approcah to storing and loading texture instances.
+- [x] ElekTexMap: Hash-map based approach to storing and loading texture instances.
 - In-Engine CPU Profiler
 
 ## FUTURE WORK
