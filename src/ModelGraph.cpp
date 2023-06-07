@@ -206,9 +206,7 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 			material.Get(AI_MATKEY_SHININESS, shininess);
 		}
 
-		std::string skymap_filepath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, skymap_filepath, 2));
-		//bindablePtrs.push_back(std::make_unique<Texture>(gfx, skymap_filepath, 2));
+		bindablePtrs.push_back(std::make_unique<ElekTexCube>(gfx, elekTexMap, "C:/Projects/elektron-v2/assets/models/sky/", 2));
 
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}

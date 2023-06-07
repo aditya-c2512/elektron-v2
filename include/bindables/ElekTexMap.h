@@ -13,6 +13,17 @@ enum class ELEKTRON_TEXTURE_FORMAT
 	ELEKTRON_TEXTURE_HDR,
 };
 
+class ElekTexCube : public Bindable
+{
+public:
+	ElekTexCube(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string path, unsigned int slot = 0);
+	void Bind(ElektronGFX& gfx) noexcept override;
+private:
+	unsigned int slot;
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> pTexture2D;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
+};
+
 class ElekTex : public Bindable
 {
 public:

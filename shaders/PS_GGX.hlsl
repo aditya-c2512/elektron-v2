@@ -11,7 +11,7 @@ cbuffer LightBuffer
 
 Texture2D albedoMap;
 Texture2D specularMap;
-Texture2D skyMap : register(t2); // Testing direct equirectangular map sampling for IBL. Switch to TextureCube
+TextureCube skyCube;
 sampler splr;
 
 static const float PI = 3.14159f;
@@ -59,17 +59,11 @@ float4 main(float3 cameraPos : Position, float3 n : Normal, float2 texCoords : T
 
     const float3 diffuse = burley_diffuse() * att * max(0.0f, dot(dir_vl, n));
     
+    float3 r = normalize(reflect(cameraPos, n));
+    float4 reflection = skyCube.Sample(splr, r);
     const float3 specular = att * ggx_specular(n,dir_vl,-cameraPos,texCoords);
     
-    const float3 final = saturate((diffuse + ambient_color) * albedoMap.Sample(splr, texCoords).rgb + specular);
+    const float3 final = saturate((diffuse + ambient_color) * albedoMap.Sample(splr, texCoords).rgb + reflection.xyz * specular);
     
     return float4(final, 1.0f);
-    
-    // Opposite normals sample same texel. Figure out the proper mapping technique OR Switch to Cubemaps
-    //float3 r1 = normalize(reflect(-cameraPos, n));
-    //float theta = atan2(r1.z, r1.x) / (2 * 3.14159f);
-    //float phi = acos(-r1.y) / 3.14159f;
-    //float2 uvs = float2(theta + 0.5f, phi);
-    //return skyMap.Sample(splr, uvs);
-
 }

@@ -27,10 +27,6 @@ DirectX::ScratchImage* ElekTexMap::GetScratchImage(std::string key)
 
 ElekTex::ElekTex(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string textureName, unsigned int slot): slot(slot)
 {
-	// Load Texture from file
-	/*auto image = std::make_unique<DirectX::ScratchImage>();
-	HRESULT hr = DirectX::LoadFromWICFile(textureName.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *image);*/
-
 	auto image = elekTexMap.GetScratchImage(textureName);
 
 	// Create Texture
@@ -61,6 +57,56 @@ ElekTex::ElekTex(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string textureNa
 }
 
 void ElekTex::Bind(ElektronGFX& gfx) noexcept
+{
+	GetContext(gfx)->PSSetShaderResources(slot, 1, pTextureView.GetAddressOf());
+}
+
+ElekTexCube::ElekTexCube(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string path, unsigned int slot): slot(slot)
+{
+	std::vector<std::string> sides = { "px.png","nx.png", "py.png", "ny.png", "pz.png", "nz.png" };
+	std::vector<DirectX::ScratchImage*> textureCube;
+	for (auto side : sides)
+	{
+		OutputDebugStringA("\n");
+		OutputDebugStringA((path + side).c_str());
+		
+		textureCube.push_back(elekTexMap.GetScratchImage(path+side));
+	}
+
+	// Create Texture
+	D3D11_TEXTURE2D_DESC desc = {};
+	desc.Width = textureCube[0]->GetMetadata().width;
+	desc.Height = textureCube[0]->GetMetadata().height;
+	desc.MipLevels = 1;
+	desc.ArraySize = 6;
+	desc.Format = textureCube[0]->GetMetadata().format;
+	desc.SampleDesc.Count = 1;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	D3D11_SUBRESOURCE_DATA subResData[6];
+	for (int i = 0; i < 6; i++)
+	{
+		subResData[i].pSysMem = textureCube[i]->GetImage(0, 0, 0)->pixels;
+		subResData[i].SysMemPitch = textureCube[i]->GetImage(0, 0, 0)->rowPitch;
+		subResData[i].SysMemSlicePitch = 0;
+	}
+	
+
+	GetDevice(gfx)->CreateTexture2D(&desc, subResData, &pTexture2D);
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = desc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	GetDevice(gfx)->CreateShaderResourceView(pTexture2D.Get(), &srvDesc, &pTextureView);
+}
+
+void ElekTexCube::Bind(ElektronGFX& gfx) noexcept
 {
 	GetContext(gfx)->PSSetShaderResources(slot, 1, pTextureView.GetAddressOf());
 }
