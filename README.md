@@ -21,24 +21,11 @@ Elektron Engine is my toy rendering engine that I have been developing in order 
 ### Building the Source Code
 
 ## Current WIP
-- [x] Camera system
-- [x] Dear ImGui Integration
-- [x] Lights and Shading
-- [x] Model Scene Graph
-- [x] Material Loading
-- [x] Dear ImGUI Docking => Update Dear ImGUI version
-- [x] HDRI Skybox
-- [x] Shift to GGX Shading
-- [x] Shift Texture Loading to DirectXTex
-- [x] ElekTexMap: Hash-map based approach to storing and loading texture instances.
+- PBR Shading with support for arbitrary number of point lights.
 - In-Engine CPU Profiler
 
 ## FUTURE WORK
-- [ ] PBR Materials
-- [ ] Implement Cubemap Reflections
-- [ ] Optimise Texture Loading System
 - [ ] File browser GUI to select and load mesh
-- [ ] Multiple Lights Shading and UI support
 - [ ] Shadow Mapping
 - [ ] Voxel Cone Tracing Global Illumination (VXGI)
 

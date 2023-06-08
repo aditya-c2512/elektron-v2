@@ -72,7 +72,7 @@ SkySphere::SkySphere(ElektronGFX& gfx, ElekTexMap& elekTexMap)
 
         AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
-        auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VS_Phong.cso");
+        auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VS_PBR.cso");
         auto pVSByteCode = pVertexShader->GetBytecode();
         AddStaticBind(std::move(pVertexShader));
 

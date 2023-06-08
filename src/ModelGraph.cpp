@@ -178,58 +178,26 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 
 	// TO-DO: Get embedded textures from fbx and glTF
 	// TO-DO: Expand Shader system to use PBR Materials
-	using namespace std::string_literals;
-	const auto basepath = "C:/Projects/elektron-v2/assets/models/nanosuit/"s;
-	bool hasSpecularMap = false;
-	float shininess = 35.0f;
 	if (mesh.mMaterialIndex >= 0)
 	{
-		using namespace std::string_literals;
 		auto& material = *pMaterials[mesh.mMaterialIndex];
 
-		aiString diffFilename;
-		material.GetTexture(aiTextureType_DIFFUSE, 0, &diffFilename);
-		std::string diff_filepath = basePath + diffFilename.C_Str();
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, diff_filepath, 0));
+		aiString albedoName, metalRoughnessName;
+		material.GetTexture(aiTextureType_DIFFUSE, 0, &albedoName);
+		std::string albedo_path = basePath + albedoName.C_Str();
+		material.GetTexture(aiTextureType_METALNESS, 0, &metalRoughnessName);
+		std::string metalRoughness_path = basePath + metalRoughnessName.C_Str();
 
-		aiString specFilename;
-		if (material.GetTexture(aiTextureType_SPECULAR, 0, &specFilename) == aiReturn_SUCCESS)
-		{
-			std::string spec_filepath = basePath + specFilename.C_Str();
-			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, spec_filepath, 1));
-
-			//bindablePtrs.push_back(std::make_unique<Texture>(gfx, spec_filepath, 1));
-			hasSpecularMap = true;
-		}
-		else
-		{
-			material.Get(AI_MATKEY_SHININESS, shininess);
-		}
-
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, albedo_path, 0));
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, metalRoughness_path, 1));
 		bindablePtrs.push_back(std::make_unique<ElekTexCube>(gfx, elekTexMap, "C:/Projects/elektron-v2/assets/models/sky/", 2));
 
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}
 
-	if (hasSpecularMap)
-	{
-		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_GGX.cso"));
-	}
-	else
-	{
-		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Phong_NoSpecular.cso"));
+	bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_PBR_glTF.cso"));
 
-		struct PSMaterialBuffer
-		{
-			float intensity_specular = 1.6f;
-			float power_specular;
-			float padding[2];
-		} materialBuff;
-		materialBuff.power_specular = shininess;
-		bindablePtrs.push_back(std::make_unique<PixelConstantBuffer<PSMaterialBuffer>>(gfx, materialBuff, 1));
-	}
-
-	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Phong.cso");
+	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_PBR.cso");
 	auto pvsbc = pvs->GetBytecode();
 	bindablePtrs.push_back(std::move(pvs));
 
