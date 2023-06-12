@@ -18,7 +18,16 @@ DirectX::ScratchImage* ElekTexMap::GetScratchImage(std::string key)
 	{
 		std::wstring w_key(key.begin(), key.end());
 		DirectX::ScratchImage* image = new DirectX::ScratchImage();
-		HRESULT hr = DirectX::LoadFromWICFile(w_key.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *image);
+		HRESULT hr;
+		if(key.ends_with(".hdr"))
+			hr = DirectX::LoadFromHDRFile(w_key.c_str(), nullptr, *image);
+		else if (key.ends_with(".dds"))
+			hr = DirectX::LoadFromDDSFile(w_key.c_str(), DirectX::DDS_FLAGS_NONE, nullptr, *image);
+		else if(key.ends_with(".tga"))
+			hr = DirectX::LoadFromTGAFile(w_key.c_str(), nullptr, *image);
+		else
+			hr = DirectX::LoadFromWICFile(w_key.c_str(), DirectX::WIC_FLAGS_NONE, nullptr, *image);
+		
 		textureMap[key] = image;
 	}
 
@@ -67,9 +76,6 @@ ElekTexCube::ElekTexCube(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string p
 	std::vector<DirectX::ScratchImage*> textureCube;
 	for (auto side : sides)
 	{
-		OutputDebugStringA("\n");
-		OutputDebugStringA((path + side).c_str());
-		
 		textureCube.push_back(elekTexMap.GetScratchImage(path+side));
 	}
 

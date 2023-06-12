@@ -5,14 +5,6 @@
 #include <string>
 #include <unordered_map>
 
-enum class ELEKTRON_TEXTURE_FORMAT
-{
-	ELEKTRON_TEXTURE_PNG,
-	ELEKTRON_TEXTURE_JPG,
-	ELEKTRON_TEXTURE_DDS,
-	ELEKTRON_TEXTURE_HDR,
-};
-
 class ElekTexCube : public Bindable
 {
 public:

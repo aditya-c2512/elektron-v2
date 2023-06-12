@@ -16,6 +16,7 @@ void TransformCBuf::Bind(ElektronGFX& gfx) noexcept
 	const auto modelView = parent.GetTransform() * gfx.GetCamera();
 	const Transforms tf =
 	{
+		DirectX::XMMatrixTranspose(parent.GetTransform()),
 		DirectX::XMMatrixTranspose(modelView),
 		DirectX::XMMatrixTranspose(
 			modelView *

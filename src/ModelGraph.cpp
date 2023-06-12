@@ -93,7 +93,7 @@ ModelGraph::ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::stri
 	Assimp::Importer imp;
 	const auto pScene = imp.ReadFile((basePath+modelName).c_str(),
 		aiProcess_Triangulate |
-		aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_GenNormals
+		aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace
 	);
 
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
@@ -144,6 +144,8 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 		aiVector3D aiVertex = mesh.mVertices[vIdx];
 		aiVector3D aiNorm = mesh.mNormals[vIdx];
 		aiVector3D aiTexCoord = mesh.mTextureCoords[0][vIdx];
+		aiVector3D aiTangent = mesh.mTangents[vIdx];
+		aiVector3D aiBitangent = mesh.mBitangents[vIdx];
 
 		minX = aiTexCoord.x < minX ? aiTexCoord.x : minX;
 		minY = aiTexCoord.y < minY ? aiTexCoord.y : minY;
@@ -158,6 +160,14 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 
 		vert.texCoords.x = aiTexCoord.x;
 		vert.texCoords.y = aiTexCoord.y;
+
+		vert.tangent.x = aiTangent.x;
+		vert.tangent.y = aiTangent.y;
+		vert.tangent.z = aiTangent.z;
+
+		vert.bitangent.x = aiBitangent.x;
+		vert.bitangent.y = aiBitangent.y;
+		vert.bitangent.z = aiBitangent.z;
 
 		vertices.push_back(vert);
 	}
@@ -177,20 +187,28 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 	bindablePtrs.push_back(std::make_unique<IndexBuffer>(gfx, indices));
 
 	// TO-DO: Get embedded textures from fbx and glTF
-	// TO-DO: Expand Shader system to use PBR Materials
 	if (mesh.mMaterialIndex >= 0)
 	{
 		auto& material = *pMaterials[mesh.mMaterialIndex];
 
-		aiString albedoName, metalRoughnessName;
+		aiString albedoName, normalName, metalRoughnessName, emissiveName, aoName;
 		material.GetTexture(aiTextureType_DIFFUSE, 0, &albedoName);
 		std::string albedo_path = basePath + albedoName.C_Str();
+		material.GetTexture(aiTextureType_NORMALS, 0, &normalName);
+		std::string normal_path = basePath + normalName.C_Str();
 		material.GetTexture(aiTextureType_METALNESS, 0, &metalRoughnessName);
 		std::string metalRoughness_path = basePath + metalRoughnessName.C_Str();
+		material.GetTexture(aiTextureType_EMISSIVE, 0, &emissiveName);
+		std::string emissive_path = basePath + emissiveName.C_Str();
+		material.GetTexture(aiTextureType_LIGHTMAP, 0, &aoName);
+		std::string ao_path = basePath + aoName.C_Str();
 
 		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, albedo_path, 0));
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, metalRoughness_path, 1));
-		bindablePtrs.push_back(std::make_unique<ElekTexCube>(gfx, elekTexMap, "C:/Projects/elektron-v2/assets/models/sky/", 2));
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, normal_path, 1));
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, metalRoughness_path, 2));
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, emissive_path, 3));
+		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, ao_path, 4));
+		bindablePtrs.push_back(std::make_unique<ElekTexCube>(gfx, elekTexMap, "C:/Projects/elektron-v2/assets/models/sky/", 5));
 
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}

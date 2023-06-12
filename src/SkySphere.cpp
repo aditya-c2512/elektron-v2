@@ -33,7 +33,7 @@ SkySphere::SkySphere(ElektronGFX& gfx, ElekTexMap& elekTexMap)
     }
 
     aiMesh* mesh = scene->mMeshes[0];
-    std::vector<Vertex> vertices;
+    std::vector<VertexSkySphere> vertices;
     std::vector<unsigned int> indices;
 
     for (unsigned int vIdx = 0; vIdx < mesh->mNumVertices; vIdx++)
@@ -42,7 +42,7 @@ SkySphere::SkySphere(ElektronGFX& gfx, ElekTexMap& elekTexMap)
         aiVector3D aiNorm = mesh->mNormals[vIdx];
         aiVector3D aiTexCoord = mesh->mTextureCoords[0][vIdx];
 
-        Vertex vert;
+        VertexSkySphere vert;
         vert.pos.x = aiVertex.x;
         vert.pos.y = aiVertex.y;
         vert.pos.z = aiVertex.z;
@@ -72,20 +72,20 @@ SkySphere::SkySphere(ElektronGFX& gfx, ElekTexMap& elekTexMap)
 
         AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
-        auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VS_PBR.cso");
+        auto pVertexShader = std::make_unique<VertexShader>(gfx, L"VS_Environment.cso");
         auto pVSByteCode = pVertexShader->GetBytecode();
         AddStaticBind(std::move(pVertexShader));
 
         AddStaticBind(std::make_unique<PixelShader>(gfx, L"PS_Environment.cso"));
 
-        std::string texturePath = "C:/Projects/elektron-v2/assets/models/sky/skymap_hdri.png";
+        std::string texturePath = "C:/Projects/elektron-v2/assets/models/sky/scythian_tombs_hdri.hdr";
         AddStaticBind(std::make_unique<ElekTex>(gfx, elekTexMap, texturePath, 0));
 
         AddStaticBind(std::make_unique<Sampler>(gfx));
 
         AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, indices));
 
-        AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pVSByteCode));
+        AddStaticBind(std::make_unique<InputLayout>(gfx, iedSkySphere, pVSByteCode));
 
         AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
     }
