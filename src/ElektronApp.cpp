@@ -1,13 +1,12 @@
 #include "../include/ElektronApp.h"
 #include <memory>
-
 #include "../imgui/imgui.h"
 
-#include "windows.h"
+#define PI 3.14159f
 
 ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080), 
-							wnd(1920,1080,L"Elektron Engine V2.0"), pointLight(wnd.GetGfx()),
-							modelGraph(wnd.GetGfx(), elekTexMap, "C:/Projects/elektron-v2/assets/models/helmet/", "DamagedHelmet.gltf", ModelGraph::ELEKTRON_MODEL_FORMAT::ELEKTRON_MODEL_WAVEFRONT),
+							wnd(1920,1080,L"Elektron Engine V2.0"),
+							modelGraph(wnd.GetGfx(), elekTexMap, "C:/Projects/elektron-v2/assets/models/sponza/", "Sponza.gltf", ModelGraph::ELEKTRON_MODEL_FORMAT::ELEKTRON_MODEL_GLTF),
 							skySphere(wnd.GetGfx(), elekTexMap)
 {
 	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height/width, 0.5f, 500.0f));
@@ -15,24 +14,24 @@ ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080),
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
 
-	//SYSTEM_INFO sysInfo;
-	//FILETIME ftime, fsys, fuser;
+	SYSTEM_INFO sysInfo;
+	FILETIME ftime, fsys, fuser;
 
-	//GetSystemInfo(&sysInfo);
-	//numProcessors = sysInfo.dwNumberOfProcessors;
+	GetSystemInfo(&sysInfo);
+	numProcessors = sysInfo.dwNumberOfProcessors;
 
-	//GetSystemTimeAsFileTime(&ftime);
-	//memcpy(&lastCPU, &ftime, sizeof(FILETIME));
+	GetSystemTimeAsFileTime(&ftime);
+	memcpy(&lastCPU, &ftime, sizeof(FILETIME));
 
-	//self = GetCurrentProcess();
-	//GetProcessTimes(self, &ftime, &ftime, &fsys, &fuser);
-	//memcpy(&lastSysCPU, &fsys, sizeof(FILETIME));
-	//memcpy(&lastUserCPU, &fuser, sizeof(FILETIME));
+	self = GetCurrentProcess();
+	GetProcessTimes(self, &ftime, &ftime, &fsys, &fuser);
+	memcpy(&lastSysCPU, &fsys, sizeof(FILETIME));
+	memcpy(&lastUserCPU, &fuser, sizeof(FILETIME));
 }
 
 double ElektronApp::GetCPUDiagnostics() 
 {
-	/*FILETIME ftime, fsys, fuser;
+	FILETIME ftime, fsys, fuser;
 	ULARGE_INTEGER now, sys, user;
 	double percent;
 
@@ -48,9 +47,9 @@ double ElektronApp::GetCPUDiagnostics()
 	percent /= numProcessors;
 	lastCPU = now;
 	lastUserCPU = user;
-	lastSysCPU = sys;*/
+	lastSysCPU = sys;
 
-	return 100;
+	return percent;
 }
 
 int ElektronApp::Run()
@@ -74,11 +73,10 @@ void ElektronApp::RunFrame()
 
 	wnd.GetGfx().SetCamera(cam.GetMatrix());
 
-	pointLight.Bind(wnd.GetGfx(), cam.GetMatrix());
+	//pointLight.Bind(wnd.GetGfx(), cam.GetMatrix());
 
 	skySphere.Draw(wnd.GetGfx());
 	modelGraph.Draw(wnd.GetGfx());
-	pointLight.Draw(wnd.GetGfx());
 
 	if (ImGui::Begin("Engine Diagnostics", NULL, ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -89,11 +87,11 @@ void ElektronApp::RunFrame()
 	ImGui::End();
 
 	modelGraph.SpawnModelGraphControlWindow();
-	//SpawnViewportWindow(); // TO-DO: Separate viewport window for rendering.
 	cam.SpawnControlWindow();
-	pointLight.SpawnControlWindow();
+	//pointLight.SpawnControlWindow();
+	//pointLight.SpawnDebugWindow();
 
-	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height / width, cam.near_plane, cam.far_plane));
+	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveFovLH((cam.fov * PI)/180.0f, width / height, cam.near_plane, cam.far_plane));
 
 	wnd.GetGfx().PresentFrame();
 }

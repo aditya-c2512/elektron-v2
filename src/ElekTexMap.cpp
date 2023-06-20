@@ -36,6 +36,7 @@ DirectX::ScratchImage* ElekTexMap::GetScratchImage(std::string key)
 
 ElekTex::ElekTex(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string textureName, unsigned int slot): slot(slot)
 {
+	if (textureName == "") return;
 	auto image = elekTexMap.GetScratchImage(textureName);
 
 	// Create Texture

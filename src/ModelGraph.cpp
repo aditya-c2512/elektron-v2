@@ -95,12 +95,10 @@ ModelGraph::ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::stri
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace
 	);
-
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
 		meshPtrs.push_back(ParseMesh(gfx, elekTexMap, *pScene->mMeshes[i], pScene->mMaterials));
 	}
-
 	pRoot = ParseNode(*pScene->mRootNode);
 }
 
@@ -191,31 +189,30 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 	{
 		auto& material = *pMaterials[mesh.mMaterialIndex];
 
-		aiString albedoName, normalName, metalRoughnessName, emissiveName, aoName;
-		material.GetTexture(aiTextureType_DIFFUSE, 0, &albedoName);
-		std::string albedo_path = basePath + albedoName.C_Str();
-		material.GetTexture(aiTextureType_NORMALS, 0, &normalName);
-		std::string normal_path = basePath + normalName.C_Str();
-		material.GetTexture(aiTextureType_METALNESS, 0, &metalRoughnessName);
-		std::string metalRoughness_path = basePath + metalRoughnessName.C_Str();
-		material.GetTexture(aiTextureType_EMISSIVE, 0, &emissiveName);
-		std::string emissive_path = basePath + emissiveName.C_Str();
-		material.GetTexture(aiTextureType_LIGHTMAP, 0, &aoName);
-		std::string ao_path = basePath + aoName.C_Str();
-
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, albedo_path, 0));
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, normal_path, 1));
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, metalRoughness_path, 2));
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, emissive_path, 3));
-		bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, ao_path, 4));
-		bindablePtrs.push_back(std::make_unique<ElekTexCube>(gfx, elekTexMap, "C:/Projects/elektron-v2/assets/models/sky/", 5));
+		aiString albedoName, normalName, metallicName;
+		std::string albedo_path = "", normal_path = "", metallic_path = "";
+		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &albedoName) == aiReturn_SUCCESS)
+		{
+			albedo_path = basePath + albedoName.C_Str();
+			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, albedo_path, 0));
+		}
+		if (material.GetTexture(aiTextureType_NORMALS, 0, &normalName) == aiReturn_SUCCESS)
+		{
+			normal_path = basePath + normalName.C_Str();
+			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, normal_path, 1));
+		}
+		if (material.GetTexture(aiTextureType_METALNESS, 0, &metallicName) == aiReturn_SUCCESS)
+		{
+			metallic_path = basePath + metallicName.C_Str();
+			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, metallic_path, 2));
+		}
 
 		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
 	}
 
-	bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_PBR_glTF.cso"));
+	bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Sponza.cso"));
 
-	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_PBR.cso");
+	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Sponza.cso");
 	auto pvsbc = pvs->GetBytecode();
 	bindablePtrs.push_back(std::move(pvs));
 

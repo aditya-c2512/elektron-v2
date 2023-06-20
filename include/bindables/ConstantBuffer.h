@@ -18,6 +18,18 @@ public:
 		memcpy(msr.pData, &consts, sizeof(consts));
 		GetContext(gfx)->Unmap(pConstantBuffer.Get(), 0u);
 	}
+	void Update(ElektronGFX& gfx, const std::vector<C> consts)
+	{
+		D3D11_MAPPED_SUBRESOURCE msr;
+		GetContext(gfx)->Map(
+			pConstantBuffer.Get(), 0u,
+			D3D11_MAP_WRITE_DISCARD, 0u,
+			&msr
+		);
+		memcpy(msr.pData, &consts[0], sizeof(C) * consts.size());
+
+		GetContext(gfx)->Unmap(pConstantBuffer.Get(), 0u);
+	}
 	ConstantBuffer(ElektronGFX& gfx, const C& consts, UINT slot = 0) : slot(slot)
 	{
 		D3D11_BUFFER_DESC cbd = {};
@@ -31,6 +43,21 @@ public:
 		D3D11_SUBRESOURCE_DATA csd = {};
 		csd.pSysMem = &consts;
 		GetDevice(gfx)->CreateBuffer(&cbd, &csd, &pConstantBuffer);
+	}
+	ConstantBuffer(ElektronGFX& gfx, const std::vector<C> consts, UINT slot = 0) : slot(slot)
+	{
+		D3D11_BUFFER_DESC cbd = {};
+		cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		cbd.Usage = D3D11_USAGE_DYNAMIC;
+		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		cbd.MiscFlags = 0u;
+		cbd.ByteWidth = sizeof(C) * consts.size();
+		cbd.StructureByteStride = 0;
+
+		D3D11_SUBRESOURCE_DATA csd = {};
+		csd.pSysMem = &consts[0];
+		GetDevice(gfx)->CreateBuffer(&cbd, &csd, &pConstantBuffer);
+
 	}
 	ConstantBuffer(ElektronGFX& gfx, UINT slot = 0) : slot(slot)
 	{

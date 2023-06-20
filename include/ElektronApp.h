@@ -27,7 +27,6 @@ private:
 	float speed_factor = 1.0f;
 
 	Camera cam;
-	PointLight pointLight;
 	ElekTexMap elekTexMap;
 	ModelGraph modelGraph;
 	SkySphere skySphere;
@@ -35,8 +34,8 @@ private:
 	MEMORYSTATUSEX memInfo;
 	double ram_usage;
 
-	/*static ULARGE_INTEGER lastCPU, lastSysCPU, lastUserCPU;
-	static int numProcessors;
-	static HANDLE self;*/
+	ULARGE_INTEGER lastCPU, lastSysCPU, lastUserCPU;
+	int numProcessors;
+	HANDLE self;
 };
 

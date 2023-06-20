@@ -17,11 +17,8 @@ void TransformCBuf::Bind(ElektronGFX& gfx) noexcept
 	const Transforms tf =
 	{
 		DirectX::XMMatrixTranspose(parent.GetTransform()),
-		DirectX::XMMatrixTranspose(modelView),
-		DirectX::XMMatrixTranspose(
-			modelView *
-			gfx.GetProjection()
-		)
+		DirectX::XMMatrixTranspose(gfx.GetCamera()),
+		DirectX::XMMatrixTranspose(gfx.GetProjection())
 	};
 	pVCBuf->Update(gfx, tf);
 	/*pVCBuf->Update(gfx,

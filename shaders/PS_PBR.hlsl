@@ -1,12 +1,4 @@
-//struct PointLight
-//{
-//    float3 lightPos;
-//    float3 ambient_color;
-//    float3 diffuse_color;
-//    float intensity_diffuse;
-//};
-
-cbuffer LightBuffer
+struct PointLight
 {
     float3 lightPos;
     float3 ambient_color;
@@ -14,9 +6,14 @@ cbuffer LightBuffer
     float intensity_diffuse;
 };
 
+cbuffer LightBuffer : register(b0)
+{
+    PointLight pointLights[4];
+};
+
 static const float att_const = 1.0f;
 static const float att_lin = 0.0014;
-static const float att_quad = 0.000007;
+static const float att_quad = 0.00007f;
 static float3 f;
 
 Texture2D albedoMap : register(t0);
@@ -29,10 +26,6 @@ sampler splr;
 
 static const float PI = 3.14159f;
 
-float3 burley_diffuse()
-{
-    return diffuse_color * intensity_diffuse;
-}
 float ggx_G(float a, float3 n, float3 l, float3 v)
 {
     float k = pow(a + 1, 2) / 8.0f;
@@ -48,7 +41,7 @@ float3 ggx_F(float3 f0, float voh)
 float ggx_D(float a, float noh)
 {
     float d = a / (noh * noh * (a * a - 1.0f) + 1.0f);
-    return d * d/PI;
+    return d * d / PI;
 }
 float3 ggx_specular(float3 n, float3 l, float3 v, float2 texCoords)
 {
@@ -56,41 +49,44 @@ float3 ggx_specular(float3 n, float3 l, float3 v, float2 texCoords)
     const float roughness = metalRoughness.g;
     const float metallic = metalRoughness.b;
     
-    float3 h = normalize((v + l)/2);
+    float3 h = normalize((v + l) / 2);
     
     float3 f0 = float3(0.09f, 0.09f, 0.09f);
     f0 = lerp(f0, albedoMap.Sample(splr, texCoords).rgb, metallic);
     f = ggx_F(f0, max(dot(v, h), 0.0f));
     
-    float3 specular = ggx_D(roughness * roughness, dot(n, h)) * f * ggx_G(roughness * roughness, n, l, v) / (4 * dot(n, l) * dot(n, v) + 0.0001f);
+    float3 specular = max(dot(l, n), 0.0f) * ggx_D(roughness * roughness, dot(n, h)) * f * ggx_G(roughness * roughness, n, l, v) / (4 * dot(n, l) * dot(n, v) + 0.0001f);
 
     return specular;
 }
 
 float4 main(float3 cameraPos : Position, float3 dn : Normal, float2 texCoords : TextureCoord, float3x3 tbn : TBN_Normal) : SV_TARGET
 {
+    float3 final = float3(0, 0, 0);
     float3 n = normalMap.Sample(splr, texCoords).rgb;
     n = normalize(2.0f * n - 1.0f);
     n = mul(n, tbn);
     
-    const float3 vl = lightPos - cameraPos;
-    const float dist_vl = length(vl);
-    const float3 dir_vl = vl / dist_vl;
-
-    const float att = 1.0f / (att_const + att_lin * dist_vl + att_quad * (dist_vl * dist_vl));
-
-    const float3 diffuse = burley_diffuse() * att * max(0.0f, dot(dir_vl, n));
-    
-    const float3 specular = att * ggx_specular(n, dir_vl, -cameraPos, texCoords);
-    
     const float metallic = metalRoughnessMap.Sample(splr, texCoords).b;
     
+    for (int i = 0; i < 4; i++)
+    {
+        const float3 vl = pointLights[i].lightPos - cameraPos;
+        const float dist_vl = length(vl);
+        const float3 dir_vl = vl / dist_vl;
+
+        const float att = 1.0f / (att_const + att_quad * dist_vl * dist_vl);
+    
+        const float3 specular = att * ggx_specular(n, dir_vl, -cameraPos, texCoords);
+    
+        float3 kD = (1.0f - f) * (1 - metallic);
+    
+        final += (kD/PI * albedoMap.Sample(splr, texCoords).rgb + specular) * att * pointLights[i].diffuse_color * pointLights[i].intensity_diffuse * max(dot(dir_vl,n),0);
+    }
     const float3 r = reflect(cameraPos, n);
     const float3 skyReflection = skyCube.Sample(splr, r).rgb;
     
-    float3 kD = (1.0f - f)*(1-metallic);
-    
-    float3 final = saturate(kD * diffuse * albedoMap.Sample(splr, texCoords).rgb + emissiveMap.Sample(splr, texCoords).rgb + metallic * specular + skyReflection * metallic / 10);
+    final += emissiveMap.Sample(splr, texCoords).rgb + skyReflection * metallic / 10;
     final = final / (final + float3(1.0f, 1.0f, 1.0f));
     final = pow(final, float3(1.0f / 2.2f, 1.0f / 2.2f, 1.0f / 2.2f));
     

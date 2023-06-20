@@ -8,7 +8,8 @@ Elektron Engine is my toy rendering engine that I have been developing in order 
 - HDRI Sky Sphere
 - Supports Wavefront OBJ meshes and materials(.mtl)
 - Supports glTF meshes
-- Efficient texture loading system(WIP)
+- Efficient texture loading system
+- PBR Shading with support for arbitrary number of point lights.
 
 ## INSTALLATION
 > NOTE : Elektron Engine is currently Windows only
@@ -21,9 +22,7 @@ Elektron Engine is my toy rendering engine that I have been developing in order 
 ### Building the Source Code
 
 ## Current WIP
-- PBR Shading with support for arbitrary number of point lights.
-- In-Engine CPU Profiler
-
+- Sponza Demo scene
 ## FUTURE WORK
 - [ ] File browser GUI to select and load mesh
 - [ ] Shadow Mapping
