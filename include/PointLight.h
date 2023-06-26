@@ -10,7 +10,6 @@ class PointLight
 public:
 	PointLight(ElektronGFX& gfx);
 	void SpawnControlWindow() noexcept;
-	void SpawnDebugWindow() noexcept;
 	void Draw(ElektronGFX& gfx) const noexcept;
 	void Bind(ElektronGFX& gfx, DirectX::FXMMATRIX view) const noexcept;
 private:
@@ -29,8 +28,6 @@ private:
 				1.0f,
 	};
 
-	std::vector<PointLightBuffer> pointLights;
-	int numLights = 4;
 	mutable SolidSphere mesh;
 	mutable PixelConstantBuffer<PointLightBuffer> pointCBuf;
 };

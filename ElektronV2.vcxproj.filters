@@ -144,6 +144,9 @@
     <ClCompile Include="src\ElekTexMap.cpp">
       <Filter>Source Files\Bindable</Filter>
     </ClCompile>
+    <ClCompile Include="src\DirectionalLight.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ElekWin.h">
@@ -313,6 +316,9 @@
     </ClInclude>
     <ClInclude Include="include\bindables\ElekTexMap.h">
       <Filter>Header Files\Bindable</Filter>
+    </ClInclude>
+    <ClInclude Include="include\DirectionalLight.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

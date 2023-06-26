@@ -7,7 +7,8 @@
 ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080), 
 							wnd(1920,1080,L"Elektron Engine V2.0"),
 							modelGraph(wnd.GetGfx(), elekTexMap, "C:/Projects/elektron-v2/assets/models/sponza/", "Sponza.gltf", ModelGraph::ELEKTRON_MODEL_FORMAT::ELEKTRON_MODEL_GLTF),
-							skySphere(wnd.GetGfx(), elekTexMap)
+							skySphere(wnd.GetGfx(), elekTexMap),
+							pointLight(wnd.GetGfx())
 {
 	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height/width, 0.5f, 500.0f));
 
@@ -73,10 +74,11 @@ void ElektronApp::RunFrame()
 
 	wnd.GetGfx().SetCamera(cam.GetMatrix());
 
-	//pointLight.Bind(wnd.GetGfx(), cam.GetMatrix());
-
+	pointLight.Bind(wnd.GetGfx(), cam.GetMatrix());
+	
 	skySphere.Draw(wnd.GetGfx());
 	modelGraph.Draw(wnd.GetGfx());
+	pointLight.Draw(wnd.GetGfx());
 
 	if (ImGui::Begin("Engine Diagnostics", NULL, ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize))
 	{
@@ -88,8 +90,7 @@ void ElektronApp::RunFrame()
 
 	modelGraph.SpawnModelGraphControlWindow();
 	cam.SpawnControlWindow();
-	//pointLight.SpawnControlWindow();
-	//pointLight.SpawnDebugWindow();
+	pointLight.SpawnControlWindow();
 
 	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveFovLH((cam.fov * PI)/180.0f, width / height, cam.near_plane, cam.far_plane));
 

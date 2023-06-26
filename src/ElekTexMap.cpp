@@ -43,27 +43,29 @@ ElekTex::ElekTex(ElektronGFX& gfx, ElekTexMap& elekTexMap, std::string textureNa
 	D3D11_TEXTURE2D_DESC desc = {};
 	desc.Width = image->GetMetadata().width;
 	desc.Height = image->GetMetadata().height;
-	desc.MipLevels = 1;
+	desc.MipLevels = 0;
 	desc.ArraySize = 1;
 	desc.Format = image->GetMetadata().format;
 	desc.SampleDesc.Count = 1;
-	desc.Usage = D3D11_USAGE_DYNAMIC;
-	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	desc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	desc.MiscFlags = 0;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = D3D11_RESOURCE_MISC_GENERATE_MIPS;
 
-	D3D11_SUBRESOURCE_DATA subResData = {};
-	subResData.pSysMem = image->GetImage(0, 0, 0)->pixels;
-	subResData.SysMemPitch = image->GetImage(0, 0, 0)->rowPitch;
-			
-	GetDevice(gfx)->CreateTexture2D(&desc, &subResData, &pTexture2D);
+	GetDevice(gfx)->CreateTexture2D(&desc, nullptr, &pTexture2D);
+
+	GetContext(gfx)->UpdateSubresource(pTexture2D.Get(), 0u, nullptr, image->GetImage(0, 0, 0)->pixels, image->GetImage(0, 0, 0)->rowPitch, 0u);
+
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
 	srvDesc.Format = desc.Format;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MostDetailedMip = 0;
-	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MipLevels = -1;
 
 	GetDevice(gfx)->CreateShaderResourceView(pTexture2D.Get(), &srvDesc, &pTextureView);
+
+	GetContext(gfx)->GenerateMips(pTextureView.Get());
 }
 
 void ElekTex::Bind(ElektronGFX& gfx) noexcept

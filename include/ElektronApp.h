@@ -30,6 +30,7 @@ private:
 	ElekTexMap elekTexMap;
 	ModelGraph modelGraph;
 	SkySphere skySphere;
+	PointLight pointLight;
 
 	MEMORYSTATUSEX memInfo;
 	double ram_usage;
