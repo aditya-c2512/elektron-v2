@@ -49,8 +49,16 @@ public:
 	Window& operator=(const Window&) = delete;
 	void SetTitle(const std::string& title);
 	static std::optional<int> ProcessMessages();
+	void EnableCursor();
+	void DisableCursor();
+	bool CursorEnabled()
+	{
+		return cursor_enabled;
+	}
 	ElektronGFX& GetGfx();
 private:
+	void HideCursor();
+	void ShowCursor();
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
@@ -58,9 +66,12 @@ public:
 	Keyboard keyboard;
 	Mouse mouse;
 private:
+	bool cursor_enabled = false;
 	int width, height;
 	HWND hWnd;
 	std::unique_ptr<ElektronGFX> pGfx;
+	std::vector<BYTE> rawBuffer;
+	std::string commandLine;
 };
 
 #define ELWND_EXCEPT(hr) Window::Exception(__LINE__,__FILE__,hr)

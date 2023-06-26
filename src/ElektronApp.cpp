@@ -80,6 +80,77 @@ void ElektronApp::RunFrame()
 	modelGraph.Draw(wnd.GetGfx());
 	pointLight.Draw(wnd.GetGfx());
 
+	/*while (const auto e = wnd.keyboard.ReadKey())
+	{
+		if (!e->isPressed())
+		{
+			continue;
+		}
+
+		switch (e->GetCode())
+		{
+		case VK_ESCAPE:
+			if (wnd.CursorEnabled())
+			{
+				wnd.DisableCursor();
+				wnd.mouse.EnableRaw();
+			}
+			else
+			{
+				wnd.EnableCursor();
+				wnd.mouse.DisableRaw();
+			}
+			break;
+		}
+	}*/
+
+	if (wnd.mouse.RightIsPressed())
+	{
+		wnd.DisableCursor();
+		wnd.mouse.EnableRaw();
+	}
+	else
+	{
+		wnd.EnableCursor();
+		wnd.mouse.DisableRaw();
+	}
+
+	if (!wnd.CursorEnabled())
+	{
+		if (wnd.keyboard.KeyIsPressed('W'))
+		{
+			cam.Translate({ 0.0f,0.0f,dt });
+		}
+		if (wnd.keyboard.KeyIsPressed('A'))
+		{
+			cam.Translate({ -dt,0.0f,0.0f });
+		}
+		if (wnd.keyboard.KeyIsPressed('S'))
+		{
+			cam.Translate({ 0.0f,0.0f,-dt });
+		}
+		if (wnd.keyboard.KeyIsPressed('D'))
+		{
+			cam.Translate({ dt,0.0f,0.0f });
+		}
+		if (wnd.keyboard.KeyIsPressed('R'))
+		{
+			cam.Translate({ 0.0f,dt,0.0f });
+		}
+		if (wnd.keyboard.KeyIsPressed('F'))
+		{
+			cam.Translate({ 0.0f,-dt,0.0f });
+		}
+	}
+
+	while (const auto delta = wnd.mouse.ReadRawDelta())
+	{
+		if (!wnd.CursorEnabled())
+		{
+			cam.Rotate((float)delta->x, (float)delta->y);
+		}
+	}
+
 	if (ImGui::Begin("Engine Diagnostics", NULL, ImGuiWindowFlags_NoCollapse|ImGuiWindowFlags_NoMove|ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize))
 	{
 		ImGui::Text("Application Average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

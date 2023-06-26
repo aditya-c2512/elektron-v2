@@ -12,8 +12,12 @@ Texture2D metallicMap : register(t2);
 
 sampler splr;
 
+static const float att_const = 1.0f;
+static const float att_lin = 0.0014;
+static const float att_quad = 0.007f;
 static const float PI = 3.14159f;
 static float3 f;
+
 float ggx_G(float a, float3 n, float3 l, float3 v)
 {
     float k = pow(a + 1, 2) / 8.0f;
@@ -54,19 +58,19 @@ float4 main(float3 cameraPos : Position, float2 texCoords : TextureCoord, float3
     n = normalize(2.0f * n - 1.0f);
     n = mul(n, tbn);
     
-    float3 l = lightPos - cameraPos;
+    float3 l = lightPos-cameraPos;
     float lightDist = length(l);
-    float3 lightDir = l / lightDist;
+    float3 lightDir = normalize(l);
     
     float3 att = 1.0f / (lightDist * lightDist);
     
     const float metallic = metallicMap.Sample(splr, texCoords).b;
     
-    float NoL = max(dot(n, normalize(lightDir)), 0.0f);
+    float NoL = max(dot(n, lightDir), 0.0f);
     float kD = (1.0f - f) * (1 - metallic);
     float3 c_diff = kD/PI * albedoMap.Sample(splr, texCoords).rgb;
-    float3 c_spec = ggx_specular(n, lightDir, -cameraPos, texCoords);
-    float3 final = NoL *  att * (c_diff + c_spec);
-    final = saturate(pow(final / (final + 1.0f), 1.0f / 2.2f));
+    float3 c_spec = ggx_specular(n, lightDir, normalize(-cameraPos), texCoords);
+    float3 final = saturate(NoL * att * (c_diff + c_spec));
+    final = pow(final / (final + 1.0f), 1.0f / 2.2f);
     return float4(final, 1.0f);
 }

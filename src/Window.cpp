@@ -73,6 +73,16 @@ Window::Window(int width, int height, LPCWSTR name) : width(width), height(heigh
 	ImGui_ImplWin32_Init(hWnd);
 
 	pGfx = std::make_unique<ElektronGFX>(hWnd, width, height);
+
+	RAWINPUTDEVICE rid;
+	rid.usUsagePage = 0x01; // mouse page
+	rid.usUsage = 0x02; // mouse usage
+	rid.dwFlags = 0;
+	rid.hwndTarget = nullptr;
+	if (RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE)
+	{
+		throw ELWND_LAST_EXCEPT();
+	}
 }
 
 Window::~Window()
@@ -105,6 +115,29 @@ std::optional<int> Window::ProcessMessages()
 	return {};
 }
 
+void Window::EnableCursor()
+{
+	cursor_enabled = true;
+	ShowCursor();
+	ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+
+	ClipCursor(nullptr);
+
+	OutputDebugString(L"Cursor Enabled\n");
+}
+
+void Window::DisableCursor()
+{
+	cursor_enabled = false;
+	HideCursor();
+	ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
+
+	RECT rect;
+	GetClientRect(hWnd, &rect);
+	MapWindowPoints(hWnd, nullptr, reinterpret_cast<POINT*>(&rect), 2);
+	ClipCursor(&rect);
+}
+
 ElektronGFX& Window::GetGfx()
 {
 	if (!pGfx)
@@ -112,6 +145,16 @@ ElektronGFX& Window::GetGfx()
 		throw ELWND_LAST_EXCEPT();
 	}
 	return *pGfx;
+}
+
+void Window::HideCursor()
+{
+	while (::ShowCursor(FALSE) >= 0);
+}
+
+void Window::ShowCursor()
+{
+	while (::ShowCursor(TRUE) < 0);
 }
 
 LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -237,6 +280,65 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		POINTS pt = MAKEPOINTS(lParam);
 		const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 		mouse.OnWheelDelta(pt.x, pt.y, delta);
+		break;
+	}
+	case WM_ACTIVATE:
+	{
+		if (!cursor_enabled)
+		{
+			if (wParam & (WA_ACTIVE|WA_CLICKACTIVE))
+			{
+				RECT rect;
+				GetClientRect(hWnd, &rect);
+				MapWindowPoints(hWnd, nullptr, reinterpret_cast<POINT*>(&rect), 2);
+				ClipCursor(&rect);
+				HideCursor();
+			}
+			else
+			{
+				ClipCursor(nullptr);
+				ShowCursor();
+			}
+		}
+		break;
+	}
+	case WM_INPUT:
+	{
+		if (!mouse.IsRawEnabled())
+		{
+			break;
+		}
+		UINT size;
+		// first get the size of the input data
+		if (GetRawInputData(
+			reinterpret_cast<HRAWINPUT>(lParam),
+			RID_INPUT,
+			nullptr,
+			&size,
+			sizeof(RAWINPUTHEADER)) == -1)
+		{
+			// bail msg processing if error
+			break;
+		}
+		rawBuffer.resize(size);
+		// read in the input data
+		if (GetRawInputData(
+			reinterpret_cast<HRAWINPUT>(lParam),
+			RID_INPUT,
+			rawBuffer.data(),
+			&size,
+			sizeof(RAWINPUTHEADER)) != size)
+		{
+			// bail msg processing if error
+			break;
+		}
+		// process the raw input data
+		auto& ri = reinterpret_cast<const RAWINPUT&>(*rawBuffer.data());
+		if (ri.header.dwType == RIM_TYPEMOUSE &&
+			(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
+		{
+			mouse.OnRawDelta(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
+		}
 		break;
 	}
 	}
