@@ -25,25 +25,21 @@ DirectX::XMMATRIX Camera::GetMatrix() const noexcept
 
 void Camera::SpawnControlWindow() noexcept
 {
-	if (ImGui::Begin("Camera", NULL, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
+	ImGui::Text("POSITION");
+	ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
+	ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
+	ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
+	ImGui::Text("ORIENTATION");
+	ImGui::SliderAngle("Pitch", &pitch, 0.995f * -90.0f, 0.995f * 90.0f);
+	ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
+	ImGui::Text("PROJECTION PLANES");
+	ImGui::SliderFloat("Near Plane", &near_plane, 0.01f, 10.0f, "%.3f");
+	ImGui::SliderFloat("Far Plane", &far_plane, 0.01f, 1000.0f);
+	ImGui::SliderFloat("F.O.V", &fov, 0.01f, 180.0f);
+	if (ImGui::Button("Reset"))
 	{
-		ImGui::Text("POSITION");
-		ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
-		ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
-		ImGui::Text("ORIENTATION");
-		ImGui::SliderAngle("Pitch", &pitch, 0.995f * -90.0f, 0.995f * 90.0f);
-		ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
-		ImGui::Text("PROJECTION PLANES");
-		ImGui::SliderFloat("Near Plane", &near_plane, 0.01f, 10.0f, "%.3f");
-		ImGui::SliderFloat("Far Plane", &far_plane, 0.01f, 1000.0f);
-		ImGui::SliderFloat("F.O.V", &fov, 0.01f, 180.0f);
-		if (ImGui::Button("Reset"))
-		{
-			Reset();
-		}
+		Reset();
 	}
-	ImGui::End();
 }
 
 void Camera::Reset()
@@ -60,6 +56,13 @@ void Camera::Rotate(float dx, float dy) noexcept
 {
 	yaw = wrap_angle(yaw + dx * rSpeed);
 	pitch = std::clamp(pitch + dy * rSpeed, 0.995f * -PI / 2.0f, 0.995f * PI / 2.0f);
+}
+
+void Camera::Draw(ElektronGFX& gfx)
+{
+	camMesh.SetPos(pos);
+	camMesh.SetRotation({pitch,yaw,0});
+	camMesh.Draw(gfx);
 }
 
 void Camera::Translate(DirectX::XMFLOAT3 translation) noexcept

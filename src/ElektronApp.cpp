@@ -12,6 +12,9 @@ ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080),
 {
 	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, height/width, 0.5f, 500.0f));
 
+	cameras.AddCamera(std::make_unique<Camera>(wnd.GetGfx(), "Free Look #1", dx::XMFLOAT3{ -13.5f,6.0f,3.5f }, 0.0f, PI / 2.0f));
+	cameras.AddCamera(std::make_unique<Camera>(wnd.GetGfx(), "Free Look #2", dx::XMFLOAT3{ -13.5f,28.8f,-6.4f }, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
+
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
 
@@ -72,37 +75,13 @@ void ElektronApp::RunFrame()
 
 	wnd.GetGfx().BeginFrame(0.129f, 0.148f, 0.179f);
 
-	wnd.GetGfx().SetCamera(cam.GetMatrix());
-
-	pointLight.Bind(wnd.GetGfx(), cam.GetMatrix());
+	cameras.Bind(wnd.GetGfx());
+	pointLight.Bind(wnd.GetGfx(), cameras.GetCamera().GetMatrix());
 	
 	skySphere.Draw(wnd.GetGfx());
 	modelGraph.Draw(wnd.GetGfx());
 	pointLight.Draw(wnd.GetGfx());
-
-	/*while (const auto e = wnd.keyboard.ReadKey())
-	{
-		if (!e->isPressed())
-		{
-			continue;
-		}
-
-		switch (e->GetCode())
-		{
-		case VK_ESCAPE:
-			if (wnd.CursorEnabled())
-			{
-				wnd.DisableCursor();
-				wnd.mouse.EnableRaw();
-			}
-			else
-			{
-				wnd.EnableCursor();
-				wnd.mouse.DisableRaw();
-			}
-			break;
-		}
-	}*/
+	cameras.Draw(wnd.GetGfx());
 
 	if (wnd.mouse.RightIsPressed())
 	{
@@ -119,27 +98,27 @@ void ElektronApp::RunFrame()
 	{
 		if (wnd.keyboard.KeyIsPressed('W'))
 		{
-			cam.Translate({ 0.0f,0.0f,dt });
+			cameras.GetCamera().Translate({ 0.0f,0.0f,dt });
 		}
 		if (wnd.keyboard.KeyIsPressed('A'))
 		{
-			cam.Translate({ -dt,0.0f,0.0f });
+			cameras.GetCamera().Translate({ -dt,0.0f,0.0f });
 		}
 		if (wnd.keyboard.KeyIsPressed('S'))
 		{
-			cam.Translate({ 0.0f,0.0f,-dt });
+			cameras.GetCamera().Translate({ 0.0f,0.0f,-dt });
 		}
 		if (wnd.keyboard.KeyIsPressed('D'))
 		{
-			cam.Translate({ dt,0.0f,0.0f });
+			cameras.GetCamera().Translate({ dt,0.0f,0.0f });
 		}
 		if (wnd.keyboard.KeyIsPressed('R'))
 		{
-			cam.Translate({ 0.0f,dt,0.0f });
+			cameras.GetCamera().Translate({ 0.0f,dt,0.0f });
 		}
 		if (wnd.keyboard.KeyIsPressed('F'))
 		{
-			cam.Translate({ 0.0f,-dt,0.0f });
+			cameras.GetCamera().Translate({ 0.0f,-dt,0.0f });
 		}
 	}
 
@@ -147,7 +126,7 @@ void ElektronApp::RunFrame()
 	{
 		if (!wnd.CursorEnabled())
 		{
-			cam.Rotate((float)delta->x, (float)delta->y);
+			cameras.GetCamera().Rotate((float)delta->x, (float)delta->y);
 		}
 	}
 
@@ -160,10 +139,10 @@ void ElektronApp::RunFrame()
 	ImGui::End();
 
 	modelGraph.SpawnModelGraphControlWindow();
-	cam.SpawnControlWindow();
+	cameras.SpawnControlWindow();
 	pointLight.SpawnControlWindow();
 
-	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveFovLH((cam.fov * PI)/180.0f, width / height, cam.near_plane, cam.far_plane));
+	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveFovLH((cameras.GetCamera().fov * PI)/180.0f, width / height, cameras.GetCamera().near_plane, cameras.GetCamera().far_plane));
 
 	wnd.GetGfx().PresentFrame();
 }

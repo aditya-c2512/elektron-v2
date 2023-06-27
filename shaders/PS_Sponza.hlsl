@@ -71,6 +71,6 @@ float4 main(float3 cameraPos : Position, float2 texCoords : TextureCoord, float3
     float3 c_diff = kD/PI * albedoMap.Sample(splr, texCoords).rgb;
     float3 c_spec = ggx_specular(n, lightDir, normalize(-cameraPos), texCoords);
     float3 final = saturate(NoL * att * (c_diff + c_spec));
-    final = pow(final / (final + 1.0f), 1.0f / 2.2f);
+    //final = pow(final / (final + 1.0f), 1.0f / 2.2f);
     return float4(final, 1.0f);
 }

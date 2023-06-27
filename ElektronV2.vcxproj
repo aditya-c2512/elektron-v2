@@ -171,6 +171,8 @@
     <ClCompile Include="src\Bindable.cpp" />
     <ClCompile Include="src\Box.cpp" />
     <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\CameraMesh.cpp" />
+    <ClCompile Include="src\Cameras.cpp" />
     <ClCompile Include="src\DirectionalLight.cpp" />
     <ClCompile Include="src\Drawable.cpp" />
     <ClCompile Include="src\ElekException.cpp" />
@@ -229,8 +231,10 @@
     <ClInclude Include="include\bindables\VertexBuffer.h" />
     <ClInclude Include="include\bindables\VertexShader.h" />
     <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Cameras.h" />
     <ClInclude Include="include\DirectionalLight.h" />
     <ClInclude Include="include\drawables\Box.h" />
+    <ClInclude Include="include\drawables\CameraMesh.h" />
     <ClInclude Include="include\drawables\Cone.h" />
     <ClInclude Include="include\drawables\Cube.h" />
     <ClInclude Include="include\drawables\Drawable.h" />
