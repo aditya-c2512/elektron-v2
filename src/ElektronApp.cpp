@@ -14,6 +14,7 @@ ElektronApp::ElektronApp() : dt(0.01f), width(1920), height(1080),
 
 	cameras.AddCamera(std::make_unique<Camera>(wnd.GetGfx(), "Free Look #1", dx::XMFLOAT3{ -13.5f,6.0f,3.5f }, 0.0f, PI / 2.0f));
 	cameras.AddCamera(std::make_unique<Camera>(wnd.GetGfx(), "Free Look #2", dx::XMFLOAT3{ -13.5f,28.8f,-6.4f }, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
+	cameras.AddCamera(pointLight.ShareCamera());
 
 	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
 	GlobalMemoryStatusEx(&memInfo);
@@ -73,12 +74,23 @@ void ElektronApp::RunFrame()
 	dt = ImGui::GetIO().DeltaTime * speed_factor;
 	ram_usage = (memInfo.ullTotalPhys - memInfo.ullAvailPhys)/pow(10,9);
 
+	// Shadow Pass using pointLight->pCam
+	wnd.GetGfx().DisableGui();
 	wnd.GetGfx().BeginFrame(0.129f, 0.148f, 0.179f);
+	wnd.GetGfx().SetCamera(pointLight.ShareCamera()->GetMatrix(), ELEK_SHADOW_PASS);
+	wnd.GetGfx().SetProjection(DirectX::XMMatrixPerspectiveFovLH((pointLight.ShareCamera()->fov * PI) / 180.0f, width / height, pointLight.ShareCamera()->near_plane, pointLight.ShareCamera()->far_plane));
+	modelGraph.pShadowCBuf->SetCamera(pointLight.ShareCamera().get());
+	modelGraph.Draw(wnd.GetGfx(), true);
 
+	wnd.GetGfx().PresentFrame();
+
+	// Normal Render Pass using camera->activeCam
+	wnd.GetGfx().EnableGui();
+	wnd.GetGfx().BeginFrame(0.129f, 0.148f, 0.179f);
 	cameras.Bind(wnd.GetGfx());
 	pointLight.Bind(wnd.GetGfx(), cameras.GetCamera().GetMatrix());
-	
 	skySphere.Draw(wnd.GetGfx());
+	modelGraph.pShadowCBuf->SetCamera((pointLight.ShareCamera()).get());
 	modelGraph.Draw(wnd.GetGfx());
 	pointLight.Draw(wnd.GetGfx());
 	cameras.Draw(wnd.GetGfx());

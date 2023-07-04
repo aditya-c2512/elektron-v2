@@ -2,6 +2,7 @@
 #include "../include/Vertex.h"
 #include "../include/bindables/Texture.h"
 #include "../include/bindables/Sampler.h"
+#include "../include/bindables/ShadowSampler.h"
 
 Mesh::Mesh(ElektronGFX& gfx, std::vector<std::unique_ptr<Bindable>> bindPtrs, std::string name) : name(name)
 {
@@ -88,13 +89,16 @@ void Node::AddChild(std::unique_ptr<Node> pChild) noexcept
 	childPtrs.push_back(std::move(pChild));
 }
 
-ModelGraph::ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::string basePath, const std::string modelName, ELEKTRON_MODEL_FORMAT model_format) : basePath(basePath)
+ModelGraph::ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::string basePath, const std::string modelName, ELEKTRON_MODEL_FORMAT model_format) : basePath(basePath), pShadowCBuf(std::make_unique<ShadowCBuf>(gfx))
 {
 	Assimp::Importer imp;
 	const auto pScene = imp.ReadFile((basePath+modelName).c_str(),
 		aiProcess_Triangulate |
 		aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_GenSmoothNormals | aiProcess_CalcTangentSpace
 	);
+
+	OutputDebugStringA("ModelGraph\n");
+
 	for (size_t i = 0; i < pScene->mNumMeshes; i++)
 	{
 		meshPtrs.push_back(ParseMesh(gfx, elekTexMap, *pScene->mMeshes[i], pScene->mMaterials));
@@ -102,8 +106,12 @@ ModelGraph::ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::stri
 	pRoot = ParseNode(*pScene->mRootNode);
 }
 
-void ModelGraph::Draw(ElektronGFX& gfx) const
+void ModelGraph::Draw(ElektronGFX& gfx, bool isShadowPass) const
 {
+	this->isShadowPass = isShadowPass;
+
+	if (isShadowPass) pShadowCBuf->Update(gfx);
+
 	const auto transform = dx::XMMatrixRotationRollPitchYaw(pos.pitch, pos.yaw, pos.roll) * dx::XMMatrixTranslation(pos.x, pos.y, pos.z);
 	pRoot->Draw(gfx, transform);
 }
@@ -184,40 +192,64 @@ std::unique_ptr<Mesh> ModelGraph::ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTe
 
 	bindablePtrs.push_back(std::make_unique<IndexBuffer>(gfx, indices));
 
-	// TO-DO: Get embedded textures from fbx and glTF
-	if (mesh.mMaterialIndex >= 0)
+	if (isShadowPass)
 	{
-		auto& material = *pMaterials[mesh.mMaterialIndex];
+		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Solid.cso"));
 
-		aiString albedoName, normalName, metallicName;
-		std::string albedo_path = "", normal_path = "", metallic_path = "";
-		if (material.GetTexture(aiTextureType_DIFFUSE, 0, &albedoName) == aiReturn_SUCCESS)
+		struct PSColorConstant
 		{
-			albedo_path = basePath + albedoName.C_Str();
-			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, albedo_path, 0));
-		}
-		if (material.GetTexture(aiTextureType_NORMALS, 0, &normalName) == aiReturn_SUCCESS)
-		{
-			normal_path = basePath + normalName.C_Str();
-			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, normal_path, 1));
-		}
-		if (material.GetTexture(aiTextureType_METALNESS, 0, &metallicName) == aiReturn_SUCCESS)
-		{
-			metallic_path = basePath + metallicName.C_Str();
-			bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, metallic_path, 2));
-		}
+			dx::XMFLOAT3 color = { 1.0f,1.0f,1.0f };
+			float padding;
+		} colorConst;
+		colorConst.color = { 1.0f,1.0f,1.0f };
+		bindablePtrs.push_back(std::make_unique<PixelConstantBuffer<PSColorConstant>>(gfx, colorConst));
 
-		bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
+		auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Solid.cso");
+		auto pvsbc = pvs->GetBytecode();
+		bindablePtrs.push_back(std::move(pvs));
+
+		bindablePtrs.push_back(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 	}
+	else
+	{
+		if (mesh.mMaterialIndex >= 0)
+		{
+			auto& material = *pMaterials[mesh.mMaterialIndex];
 
-	bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Sponza.cso"));
+			aiString albedoName, normalName, metallicName;
+			std::string albedo_path = "", normal_path = "", metallic_path = "";
+			if (material.GetTexture(aiTextureType_DIFFUSE, 0, &albedoName) == aiReturn_SUCCESS)
+			{
+				albedo_path = basePath + albedoName.C_Str();
+				bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, albedo_path, 0));
+			}
+			if (material.GetTexture(aiTextureType_NORMALS, 0, &normalName) == aiReturn_SUCCESS)
+			{
+				normal_path = basePath + normalName.C_Str();
+				bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, normal_path, 1));
+			}
+			if (material.GetTexture(aiTextureType_METALNESS, 0, &metallicName) == aiReturn_SUCCESS)
+			{
+				metallic_path = basePath + metallicName.C_Str();
+				bindablePtrs.push_back(std::make_unique<ElekTex>(gfx, elekTexMap, metallic_path, 2));
+			}
 
-	auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Sponza.cso");
-	auto pvsbc = pvs->GetBytecode();
-	bindablePtrs.push_back(std::move(pvs));
+			bindablePtrs.push_back(std::make_unique<Sampler>(gfx));
+		}
 
-	bindablePtrs.push_back(std::make_unique<InputLayout>(gfx, ied, pvsbc));
+		bindablePtrs.push_back(std::make_unique<PixelShader>(gfx, L"PS_Sponza.cso"));
 
+		auto pvs = std::make_unique<VertexShader>(gfx, L"VS_Sponza.cso");
+		auto pvsbc = pvs->GetBytecode();
+		bindablePtrs.push_back(std::move(pvs));
+
+		bindablePtrs.push_back(std::make_unique<InputLayout>(gfx, ied, pvsbc));
+
+		bindablePtrs.push_back(std::make_unique<ShadowCBuf>(gfx));
+
+		bindablePtrs.push_back(std::make_unique<ShadowSampler>(gfx));
+	}
+	
 	return std::make_unique<Mesh>(gfx, std::move(bindablePtrs), mesh.mName.C_Str());
 }
 

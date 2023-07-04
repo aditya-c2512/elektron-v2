@@ -191,6 +191,8 @@
     <ClCompile Include="src\PixelShader.cpp" />
     <ClCompile Include="src\PointLight.cpp" />
     <ClCompile Include="src\Sampler.cpp" />
+    <ClCompile Include="src\ShadowCBuf.cpp" />
+    <ClCompile Include="src\ShadowSampler.cpp" />
     <ClCompile Include="src\SkySphere.cpp" />
     <ClCompile Include="src\SolidSphere.cpp" />
     <ClCompile Include="src\Texture.cpp" />
@@ -225,6 +227,8 @@
     <ClInclude Include="include\bindables\InputLayout.h" />
     <ClInclude Include="include\bindables\PixelShader.h" />
     <ClInclude Include="include\bindables\Sampler.h" />
+    <ClInclude Include="include\bindables\ShadowCBuf.h" />
+    <ClInclude Include="include\bindables\ShadowSampler.h" />
     <ClInclude Include="include\bindables\Texture.h" />
     <ClInclude Include="include\bindables\Topology.h" />
     <ClInclude Include="include\bindables\TransformCBuf.h" />

@@ -5,6 +5,8 @@
 #include "bindables/ConstantBuffer.h"
 #include <vector>
 
+class Camera;
+
 class PointLight
 {
 public:
@@ -12,6 +14,7 @@ public:
 	void SpawnControlWindow() noexcept;
 	void Draw(ElektronGFX& gfx) const noexcept;
 	void Bind(ElektronGFX& gfx, DirectX::FXMMATRIX view) const noexcept;
+	std::shared_ptr<Camera> ShareCamera() const noexcept;
 private:
 	struct PointLightBuffer
 	{
@@ -30,4 +33,6 @@ private:
 
 	mutable SolidSphere mesh;
 	mutable PixelConstantBuffer<PointLightBuffer> pointCBuf;
+
+	std::shared_ptr<Camera> pCam;
 };

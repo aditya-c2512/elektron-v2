@@ -153,6 +153,12 @@
     <ClCompile Include="src\CameraMesh.cpp">
       <Filter>Source Files\Drawable</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShadowCBuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShadowSampler.cpp">
+      <Filter>Source Files\Bindable</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ElekWin.h">
@@ -331,6 +337,12 @@
     </ClInclude>
     <ClInclude Include="include\drawables\CameraMesh.h">
       <Filter>Header Files\Drawable</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bindables\ShadowCBuf.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\bindables\ShadowSampler.h">
+      <Filter>Header Files\Bindable</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

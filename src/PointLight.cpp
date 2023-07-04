@@ -1,7 +1,9 @@
 #include "../include/PointLight.h"
+#include "../include/Camera.h"
 
 PointLight::PointLight(ElektronGFX& gfx) : mesh(gfx,0.1f), pointCBuf(gfx)
 {
+	pCam = std::make_shared<Camera>(gfx, "Point Light", plBuf.pos, 0, 0);
 }
 
 void PointLight::SpawnControlWindow() noexcept
@@ -10,6 +12,8 @@ void PointLight::SpawnControlWindow() noexcept
 	{
 		ImGui::Text("Position");
 		ImGui::DragFloat3("World Space", &plBuf.pos.x, 0.1f, -100.0f, 100.0f, "%.1f");
+
+		pCam->SetPos(plBuf.pos);
 
 		ImGui::Text("Light Parameters");
 		ImGui::SliderFloat("Diffuse Intensity", &plBuf.intensity_diffuse, 0.0f, 100.0f, "%.3f");
@@ -43,4 +47,9 @@ void PointLight::Bind(ElektronGFX& gfx, DirectX::FXMMATRIX view) const noexcept
 
 	pointCBuf.Update(gfx, plCopy);
 	pointCBuf.Bind(gfx);
+}
+
+std::shared_ptr<Camera> PointLight::ShareCamera() const noexcept
+{
+	return pCam;
 }

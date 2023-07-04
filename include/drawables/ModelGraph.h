@@ -2,6 +2,7 @@
 #include "DrawableStatic.h"
 #include "../bindables/Bindables.h"
 #include "../bindables/ElekTexMap.h"
+#include "../bindables/ShadowCBuf.h"
 
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
@@ -50,7 +51,7 @@ public:
 	};
 public:
 	ModelGraph(ElektronGFX& gfx, ElekTexMap& elekTexMap, const std::string basePath, const std::string modelName, ELEKTRON_MODEL_FORMAT model_format);
-	void Draw(ElektronGFX& gfx) const;
+	void Draw(ElektronGFX& gfx, bool isShadowPass = false) const;
 	void SpawnModelGraphControlWindow() noexcept;
 private:
 	std::unique_ptr<Mesh> ParseMesh(ElektronGFX& gfx, ElekTexMap& elekTexMap, const aiMesh& mesh, const aiMaterial* const* pMaterials);
@@ -69,5 +70,10 @@ private:
 		float y = 0.0f;
 		float z = 0.0f;
 	} pos;
+	
+	mutable bool isShadowPass = false;
+
+public:
+	mutable std::unique_ptr<ShadowCBuf> pShadowCBuf;
 };
 

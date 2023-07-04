@@ -11,6 +11,12 @@
 
 namespace dx = DirectX;
 
+enum ElekShadowMap
+{
+	ELEK_SHADOW_PASS,
+	ELEK_NORMAL_PASS
+};
+
 class ElektronGFX
 {
 	friend class Bindable;
@@ -27,7 +33,7 @@ public :
 
 	void SetProjection(DirectX::FXMMATRIX proj) noexcept;
 	DirectX::XMMATRIX GetProjection() const noexcept;
-	void SetCamera(DirectX::XMMATRIX camMatrix) noexcept;
+	void SetCamera(DirectX::XMMATRIX camMatrix, ElekShadowMap passType=ELEK_NORMAL_PASS) noexcept;
 	DirectX::XMMATRIX GetCamera() const noexcept;
 	void EnableGui() noexcept;
 	void DisableGui() noexcept;
@@ -36,12 +42,14 @@ public :
 	{
 		return pRTView;
 	}
+	void BindShadowMap();
 	
 private:
 	int width, height;
 	bool isGuiEnabled = true;
 	DirectX::XMMATRIX projectionMatrix;
 	DirectX::XMMATRIX cameraMatrix;
+	bool isShadowPass = false;
 
 	Microsoft::WRL::ComPtr<ID3D11Device> pDevice;
 	Microsoft::WRL::ComPtr<IDXGISwapChain> pSwapChain;
@@ -49,5 +57,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11RenderTargetView> pRTView;
 	Microsoft::WRL::ComPtr<ID3D11Texture2D> pDepthStencil;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> pDSView;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pDSTexView;
 };
 

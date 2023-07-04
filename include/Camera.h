@@ -30,7 +30,6 @@ public:
 	Camera(ElektronGFX& gfx, std::string name, DirectX::XMFLOAT3 homePos = {0,0,0}, float homePitch = 0, float homeYaw = 0) 
 		: name(name), pos(homePos), pitch(homePitch), yaw(homeYaw), camMesh(gfx)
 	{
-		Reset();
 	}
 	std::string GetName()
 	{
@@ -42,6 +41,7 @@ public:
 	void Rotate(float dx, float dy) noexcept;
 	void Translate(DirectX::XMFLOAT3 translation) noexcept;
 	DirectX::XMFLOAT3 GetPos() const noexcept;
+	void SetPos(DirectX::XMFLOAT3 pos) noexcept;
 
 	void Draw(ElektronGFX& gfx);
 private:

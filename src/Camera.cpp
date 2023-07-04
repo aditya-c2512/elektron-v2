@@ -58,6 +58,12 @@ void Camera::Rotate(float dx, float dy) noexcept
 	pitch = std::clamp(pitch + dy * rSpeed, 0.995f * -PI / 2.0f, 0.995f * PI / 2.0f);
 }
 
+void Camera::SetPos(DirectX::XMFLOAT3 pos) noexcept
+{
+	this->pos = pos;
+	camMesh.SetPos(pos);
+}
+
 void Camera::Draw(ElektronGFX& gfx)
 {
 	camMesh.SetPos(pos);

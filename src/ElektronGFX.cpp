@@ -68,13 +68,13 @@ ElektronGFX::ElektronGFX(HWND hWnd, int width, int height) : width(width), heigh
 	D3D11_TEXTURE2D_DESC pDSTexState = {};
 	pDSTexState.Width = width;
 	pDSTexState.Height = height;
-	pDSTexState.Format = DXGI_FORMAT_D32_FLOAT;
+	pDSTexState.Format = DXGI_FORMAT_R32_TYPELESS;
 	pDSTexState.MipLevels = 1u;
 	pDSTexState.ArraySize = 1u;
 	pDSTexState.SampleDesc.Count = 1u;
 	pDSTexState.SampleDesc.Quality = 0u;
 	pDSTexState.Usage = D3D11_USAGE_DEFAULT;
-	pDSTexState.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	pDSTexState.BindFlags = D3D11_BIND_DEPTH_STENCIL | D3D11_BIND_SHADER_RESOURCE;
 
 	pDevice->CreateTexture2D(&pDSTexState, nullptr, &pDepthStencil);
 
@@ -87,6 +87,14 @@ ElektronGFX::ElektronGFX(HWND hWnd, int width, int height) : width(width), heigh
 	pDevice->CreateDepthStencilView(pDepthStencil.Get(), &dsvDesc, &pDSView);
 
 	pDeviceContext->OMSetRenderTargets(1u, pRTView.GetAddressOf(), pDSView.Get());
+
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
+	srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+	srvDesc.Texture2D.MipLevels = 1;
+
+	pDevice->CreateShaderResourceView(pDepthStencil.Get(), &srvDesc, &pDSTexView);
 
 	// Configure Viewport
 	D3D11_VIEWPORT vp;
@@ -109,6 +117,13 @@ void ElektronGFX::PresentFrame()
 		ImGui::Render();
 		ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
 	}
+	
+	if (isShadowPass)
+	{
+		pDeviceContext->PSSetShaderResources(3, 1, pDSTexView.GetAddressOf());
+		return;
+	}
+
 	if (FAILED(pSwapChain->Present(1u, 0u)))
 	{
 		throw ElekException(__LINE__, __FILE__);
@@ -139,8 +154,11 @@ DirectX::XMMATRIX ElektronGFX::GetProjection() const noexcept
 	return projectionMatrix;
 }
 
-void ElektronGFX::SetCamera(DirectX::XMMATRIX camMatrix) noexcept
+void ElektronGFX::SetCamera(DirectX::XMMATRIX camMatrix, ElekShadowMap passType) noexcept
 {
+	if (passType == ELEK_SHADOW_PASS) isShadowPass = true;
+	else isShadowPass = false;
+
 	cameraMatrix = camMatrix;
 }
 
@@ -162,6 +180,12 @@ void ElektronGFX::DisableGui() noexcept
 bool ElektronGFX::IsGuiEnabled() const noexcept
 {
 	return isGuiEnabled;
+}
+
+void ElektronGFX::BindShadowMap()
+{
+	ID3D11RenderTargetView* nullRTV = nullptr; pDeviceContext->OMSetRenderTargets(1, &nullRTV, nullptr);
+	pDeviceContext->PSSetShaderResources(3, 1, pDSTexView.GetAddressOf());
 }
 
 void ElektronGFX::DrawIndexed(int count)

@@ -38,7 +38,7 @@ void Cameras::Draw(ElektronGFX& gfx)
 	}
 }
 
-void Cameras::AddCamera(std::unique_ptr<Camera> pCam)
+void Cameras::AddCamera(std::shared_ptr<Camera> pCam)
 {
 	cameras.push_back(std::move(pCam));
 }
